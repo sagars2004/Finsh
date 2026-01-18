@@ -3,6 +3,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 import { UserProvider } from './src/context/UserContext';
 import { OnboardingProvider } from './src/context/OnboardingContext';
+import { AuthProvider } from './src/context/AuthContext';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { StatusBar } from 'expo-status-bar';
@@ -38,12 +39,14 @@ function ThemedApp() {
 
   return (
     <PaperProvider theme={currentPaperTheme}>
-      <UserProvider>
-        <OnboardingProvider>
-          <StatusBar style={isDark ? 'light' : 'dark'} />
-          <AppNavigator />
-        </OnboardingProvider>
-      </UserProvider>
+      <AuthProvider>
+        <UserProvider>
+          <OnboardingProvider>
+            <StatusBar style={isDark ? 'light' : 'dark'} />
+            <AppNavigator />
+          </OnboardingProvider>
+        </UserProvider>
+      </AuthProvider>
     </PaperProvider>
   );
 }
