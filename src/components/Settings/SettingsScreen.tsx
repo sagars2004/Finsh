@@ -111,7 +111,6 @@ export function SettingsScreen({ onBack, onNavigateToHome, onNavigateToProfile, 
     },
     settingDescription: {
       ...typography.caption,
-      fontSize: 12,
     },
     arrow: {
       ...typography.h3,
@@ -142,7 +141,6 @@ export function SettingsScreen({ onBack, onNavigateToHome, onNavigateToProfile, 
     },
     appearanceDescription: {
       ...typography.caption,
-      fontSize: 12,
     },
     checkmark: {
       ...typography.h4,
@@ -185,6 +183,17 @@ export function SettingsScreen({ onBack, onNavigateToHome, onNavigateToProfile, 
     },
     footerContainer: {
       backgroundColor: currentColors.surface,
+    },
+    copyright: {
+      ...typography.caption,
+      color: currentColors.textSecondary,
+      textAlign: 'center',
+      fontSize: 11,
+      marginTop: spacing.lg,
+      marginBottom: spacing.md,
+      paddingTop: spacing.md,
+      borderTopWidth: 1,
+      borderTopColor: currentColors.borderLight,
     },
   });
 
@@ -364,6 +373,10 @@ export function SettingsScreen({ onBack, onNavigateToHome, onNavigateToProfile, 
             </View>
           </Card.Content>
         </Card>
+
+        <Text style={styles.copyright}>
+          © 2026 Sagar Sahu. All Right Reserved
+        </Text>
       </ScrollView>
       <SafeAreaView edges={['bottom']} style={styles.footerContainer}>
         <Footer

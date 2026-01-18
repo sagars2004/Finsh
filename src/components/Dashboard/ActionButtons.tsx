@@ -27,7 +27,6 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
     },
     buttonLabel: {
       ...typography.button,
-      fontSize: 16,
     },
   });
 
@@ -60,21 +59,3 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.md,
-  },
-  button: {
-    width: '100%',
-    borderRadius: 8,
-  },
-  buttonContent: {
-    paddingVertical: spacing.md,
-    minHeight: spacing.touchTarget,
-  },
-  buttonLabel: {
-    ...typography.button,
-    fontSize: 16,
-  },
-});

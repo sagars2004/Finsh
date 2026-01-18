@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useUser } from '../../context/UserContext';
 import { useOnboarding } from '../../context/OnboardingContext';
@@ -96,16 +97,16 @@ export function Footer({ onHomePress, onProfilePress, onSettingsPress, navigatio
       justifyContent: 'center',
       paddingVertical: spacing.sm,
       paddingHorizontal: spacing.md,
-      minWidth: 60,
+      minWidth: 70,
     },
     icon: {
-      fontSize: 24,
       marginBottom: spacing.xs,
     },
     label: {
       ...typography.caption,
       color: currentColors.textSecondary,
-      fontSize: 11,
+      fontSize: 13,
+      fontWeight: '500',
     },
   });
 
@@ -116,7 +117,12 @@ export function Footer({ onHomePress, onProfilePress, onSettingsPress, navigatio
         onPress={handleHomePress}
         activeOpacity={0.7}
       >
-        <Text style={styles.icon}>🏠</Text>
+        <MaterialCommunityIcons
+          name="home-variant-outline"
+          size={28}
+          color={currentColors.text}
+          style={styles.icon}
+        />
         <Text style={styles.label}>Home</Text>
       </TouchableOpacity>
       
@@ -125,7 +131,12 @@ export function Footer({ onHomePress, onProfilePress, onSettingsPress, navigatio
         onPress={handleProfilePress}
         activeOpacity={0.7}
       >
-        <Text style={styles.icon}>👤</Text>
+        <MaterialCommunityIcons
+          name="account-outline"
+          size={28}
+          color={currentColors.text}
+          style={styles.icon}
+        />
         <Text style={styles.label}>Profile</Text>
       </TouchableOpacity>
       
@@ -134,7 +145,12 @@ export function Footer({ onHomePress, onProfilePress, onSettingsPress, navigatio
         onPress={handleSettingsPress}
         activeOpacity={0.7}
       >
-        <Text style={styles.icon}>⚙️</Text>
+        <MaterialCommunityIcons
+          name="cog-outline"
+          size={28}
+          color={currentColors.text}
+          style={styles.icon}
+        />
         <Text style={styles.label}>Settings</Text>
       </TouchableOpacity>
     </View>
