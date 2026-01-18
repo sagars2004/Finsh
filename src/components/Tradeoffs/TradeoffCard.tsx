@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card } from 'react-native-paper';
+import { useTheme } from '../../context/ThemeContext';
 import { TradeoffOption } from '../../types/tradeoff';
 import { formatCurrency, formatMonthlyCurrency } from '../../utils/formatters';
-import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
@@ -14,42 +14,122 @@ interface TradeoffCardProps {
 }
 
 export function TradeoffCard({ title, optionA, optionB }: TradeoffCardProps) {
+  const { currentColors } = useTheme();
+
   const renderOption = (option: TradeoffOption, isOptionA: boolean) => (
     <View
       style={[
-        styles.optionContainer,
-        isOptionA ? styles.optionAContainer : styles.optionBContainer,
+        {
+          padding: spacing.md,
+          borderRadius: 8,
+          backgroundColor: isOptionA ? currentColors.tradeoffOptionA : currentColors.tradeoffOptionB,
+        },
       ]}
     >
-      <Text style={styles.optionTitle}>{option.title}</Text>
+      <Text
+        style={{
+          ...typography.h4,
+          color: currentColors.text,
+          marginBottom: spacing.xs,
+        }}
+      >
+        {option.title}
+      </Text>
       {option.description && (
-        <Text style={styles.optionDescription}>{option.description}</Text>
+        <Text
+          style={{
+            ...typography.bodySmall,
+            color: currentColors.textSecondary,
+            marginBottom: spacing.sm,
+            fontStyle: 'italic',
+          }}
+        >
+          {option.description}
+        </Text>
       )}
-      <View style={styles.impactContainer}>
-        <Text style={styles.impactLabel}>Monthly Impact:</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: spacing.md,
+          paddingVertical: spacing.sm,
+          borderTopWidth: 1,
+          borderBottomWidth: 1,
+          borderColor: currentColors.borderLight,
+        }}
+      >
+        <Text
+          style={{
+            ...typography.bodySmall,
+            color: currentColors.textSecondary,
+            fontWeight: '500',
+          }}
+        >
+          Monthly Impact:
+        </Text>
         <Text
           style={[
-            styles.impactValue,
-            option.monthlyImpact >= 0 ? styles.impactPositive : styles.impactNegative,
+            {
+              ...typography.h4,
+              fontWeight: '700',
+            },
+            option.monthlyImpact >= 0
+              ? { color: currentColors.success }
+              : { color: currentColors.error },
           ]}
         >
           {option.monthlyImpact >= 0 ? '+' : ''}
           {formatMonthlyCurrency(option.monthlyImpact)}
         </Text>
       </View>
-      <View style={styles.prosConsContainer}>
-        <View style={styles.prosContainer}>
-          <Text style={styles.prosConsTitle}>Pros:</Text>
+      <View style={{ gap: spacing.sm }}>
+        <View style={{ marginBottom: spacing.sm }}>
+          <Text
+            style={{
+              ...typography.bodySmall,
+              color: currentColors.text,
+              fontWeight: '600',
+              marginBottom: spacing.xs,
+            }}
+          >
+            Pros:
+          </Text>
           {option.pros.map((pro, index) => (
-            <Text key={index} style={styles.prosConsItem}>
+            <Text
+              key={index}
+              style={{
+                ...typography.bodySmall,
+                color: currentColors.textSecondary,
+                marginLeft: spacing.sm,
+                marginBottom: spacing.xs,
+              }}
+            >
               • {pro}
             </Text>
           ))}
         </View>
-        <View style={styles.consContainer}>
-          <Text style={styles.prosConsTitle}>Cons:</Text>
+        <View>
+          <Text
+            style={{
+              ...typography.bodySmall,
+              color: currentColors.text,
+              fontWeight: '600',
+              marginBottom: spacing.xs,
+            }}
+          >
+            Cons:
+          </Text>
           {option.cons.map((con, index) => (
-            <Text key={index} style={styles.prosConsItem}>
+            <Text
+              key={index}
+              style={{
+                ...typography.bodySmall,
+                color: currentColors.textSecondary,
+                marginLeft: spacing.sm,
+                marginBottom: spacing.xs,
+              }}
+            >
               • {con}
             </Text>
           ))}
@@ -59,100 +139,30 @@ export function TradeoffCard({ title, optionA, optionB }: TradeoffCardProps) {
   );
 
   return (
-    <Card style={styles.card}>
+    <Card style={{ marginBottom: spacing.lg, backgroundColor: currentColors.surface }}>
       <Card.Content>
-        <Text style={styles.cardTitle}>{title}</Text>
-        <View style={styles.optionsContainer}>
+        <Text
+          style={{
+            ...typography.h3,
+            color: currentColors.text,
+            marginBottom: spacing.md,
+            textAlign: 'center',
+          }}
+        >
+          {title}
+        </Text>
+        <View style={{ gap: spacing.md }}>
           {renderOption(optionA, true)}
-          <View style={styles.divider} />
+          <View
+            style={{
+              height: 1,
+              backgroundColor: currentColors.border,
+              marginVertical: spacing.sm,
+            }}
+          />
           {renderOption(optionB, false)}
         </View>
       </Card.Content>
     </Card>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: spacing.lg,
-  },
-  cardTitle: {
-    ...typography.h3,
-    color: colors.text,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-  },
-  optionsContainer: {
-    gap: spacing.md,
-  },
-  optionContainer: {
-    padding: spacing.md,
-    borderRadius: 8,
-  },
-  optionAContainer: {
-    backgroundColor: colors.tradeoffOptionA,
-  },
-  optionBContainer: {
-    backgroundColor: colors.tradeoffOptionB,
-  },
-  optionTitle: {
-    ...typography.h4,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  optionDescription: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-    fontStyle: 'italic',
-  },
-  impactContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-    paddingVertical: spacing.sm,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  impactLabel: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-  impactValue: {
-    ...typography.h4,
-    fontWeight: '700',
-  },
-  impactPositive: {
-    color: colors.success,
-  },
-  impactNegative: {
-    color: colors.error,
-  },
-  prosConsContainer: {
-    gap: spacing.sm,
-  },
-  prosContainer: {
-    marginBottom: spacing.sm,
-  },
-  consContainer: {},
-  prosConsTitle: {
-    ...typography.bodySmall,
-    color: colors.text,
-    fontWeight: '600',
-    marginBottom: spacing.xs,
-  },
-  prosConsItem: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
-    marginLeft: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginVertical: spacing.sm,
-  },
-});

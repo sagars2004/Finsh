@@ -8,8 +8,8 @@ import { TradeoffCard } from './TradeoffCard';
 import { getPlaceholderTradeoffs } from '../../utils/placeholders';
 import { generateTradeoffs } from '../../services/replit/ai';
 import { useUser } from '../../context/UserContext';
+import { useTheme } from '../../context/ThemeContext';
 import { TradeoffCard as TradeoffCardType } from '../../types/tradeoff';
-import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
@@ -22,6 +22,7 @@ interface TradeoffCardsScreenProps {
 
 export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenProps) {
   const { userData } = useUser();
+  const { currentColors } = useTheme();
   const [cards, setCards] = useState<TradeoffCardType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -97,6 +98,98 @@ export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenP
   const cardStyle = {
     transform: [{ translateX }],
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: currentColors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: currentColors.borderLight,
+    },
+    backButton: {
+      padding: spacing.sm,
+    },
+    backButtonText: {
+      ...typography.body,
+      color: currentColors.primary,
+    },
+    counter: {
+      ...typography.bodySmall,
+      color: currentColors.textSecondary,
+    },
+    gestureContainer: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: spacing.lg,
+      flexGrow: 1,
+    },
+    navigationContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      padding: spacing.md,
+      gap: spacing.md,
+      borderTopWidth: 1,
+      borderTopColor: currentColors.borderLight,
+    },
+    navButton: {
+      flex: 1,
+    },
+    navButtonContent: {
+      paddingVertical: spacing.sm,
+    },
+    footer: {
+      padding: spacing.md,
+      borderTopWidth: 1,
+      borderTopColor: currentColors.borderLight,
+    },
+    footerText: {
+      ...typography.caption,
+      color: currentColors.textTertiary,
+      textAlign: 'center',
+      fontStyle: 'italic',
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing.lg,
+    },
+    loadingIcon: {
+      fontSize: 48,
+      marginBottom: spacing.md,
+    },
+    loadingText: {
+      ...typography.h3,
+      color: currentColors.text,
+      marginBottom: spacing.xs,
+      textAlign: 'center',
+    },
+    loadingSubtext: {
+      ...typography.body,
+      color: currentColors.textSecondary,
+      textAlign: 'center',
+    },
+    swipeHint: {
+      marginTop: spacing.md,
+      padding: spacing.sm,
+      alignItems: 'center',
+    },
+    swipeHintText: {
+      ...typography.caption,
+      color: currentColors.textTertiary,
+      fontStyle: 'italic',
+    },
+    footerIconContainer: {
+      backgroundColor: currentColors.surface,
+    },
+  });
 
   if (loading) {
     return (
@@ -176,8 +269,8 @@ export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenP
           mode="outlined"
           onPress={handlePrevious}
           disabled={currentIndex === 0}
-          buttonColor={colors.surface}
-          textColor={currentIndex === 0 ? colors.textTertiary : colors.primary}
+          buttonColor={currentColors.surface}
+          textColor={currentIndex === 0 ? currentColors.textTertiary : currentColors.primary}
           style={styles.navButton}
           contentStyle={styles.navButtonContent}
         >
@@ -187,8 +280,8 @@ export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenP
           mode="outlined"
           onPress={handleNext}
           disabled={currentIndex === cards.length - 1}
-          buttonColor={colors.surface}
-          textColor={currentIndex === cards.length - 1 ? colors.textTertiary : colors.primary}
+          buttonColor={currentColors.surface}
+          textColor={currentIndex === cards.length - 1 ? currentColors.textTertiary : currentColors.primary}
           style={styles.navButton}
           contentStyle={styles.navButtonContent}
         >
@@ -206,95 +299,3 @@ export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenP
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  backButton: {
-    padding: spacing.sm,
-  },
-  backButtonText: {
-    ...typography.body,
-    color: colors.primary,
-  },
-  counter: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
-  },
-  gestureContainer: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: spacing.lg,
-    flexGrow: 1,
-  },
-  navigationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-    gap: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.borderLight,
-  },
-  navButton: {
-    flex: 1,
-  },
-  navButtonContent: {
-    paddingVertical: spacing.sm,
-  },
-  footer: {
-    padding: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.borderLight,
-  },
-  footerText: {
-    ...typography.caption,
-    color: colors.textTertiary,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  loadingIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-  },
-  loadingText: {
-    ...typography.h3,
-    color: colors.text,
-    marginBottom: spacing.xs,
-    textAlign: 'center',
-  },
-  loadingSubtext: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  swipeHint: {
-    marginTop: spacing.md,
-    padding: spacing.sm,
-    alignItems: 'center',
-  },
-  swipeHintText: {
-    ...typography.caption,
-    color: colors.textTertiary,
-    fontStyle: 'italic',
-  },
-  footerIconContainer: {
-    backgroundColor: colors.surface,
-  },
-});

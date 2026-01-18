@@ -5,8 +5,8 @@ import { Card } from 'react-native-paper';
 import { Footer } from '../shared/Footer';
 import { BreakdownSection } from './BreakdownSection';
 import { useUser } from '../../context/UserContext';
+import { useTheme } from '../../context/ThemeContext';
 import { estimateTakeHome } from '../../services/calculations/paycheck';
-import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
@@ -17,11 +17,94 @@ interface BreakdownScreenProps {
 
 export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
   const { userData } = useUser();
+  const { currentColors } = useTheme();
 
   const breakdown = useMemo(() => {
     if (!userData?.salary) return null;
     return estimateTakeHome(userData.salary);
   }, [userData]);
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: currentColors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: currentColors.borderLight,
+    },
+    backButton: {
+      padding: spacing.sm,
+    },
+    backButtonText: {
+      ...typography.body,
+      color: currentColors.primary,
+    },
+    title: {
+      ...typography.h3,
+      color: currentColors.text,
+    },
+    placeholder: {
+      width: 60,
+    },
+    scrollContent: {
+      padding: spacing.lg,
+    },
+    infoContainer: {
+      marginBottom: spacing.lg,
+      backgroundColor: currentColors.surface,
+    },
+    infoText: {
+      ...typography.body,
+      color: currentColors.text,
+      fontWeight: '600',
+      marginBottom: spacing.xs,
+    },
+    infoSubtext: {
+      ...typography.bodySmall,
+      color: currentColors.textSecondary,
+      lineHeight: 20,
+    },
+    taxSection: {
+      marginBottom: spacing.lg,
+    },
+    benefitsSection: {
+      marginBottom: spacing.lg,
+    },
+    sectionHeader: {
+      ...typography.h4,
+      color: currentColors.text,
+      marginBottom: spacing.sm,
+      marginTop: spacing.md,
+    },
+    noteContainer: {
+      marginTop: spacing.md,
+      backgroundColor: currentColors.surface,
+    },
+    noteText: {
+      ...typography.caption,
+      color: currentColors.textSecondary,
+      fontStyle: 'italic',
+      lineHeight: 18,
+    },
+    errorContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing.lg,
+    },
+    errorText: {
+      ...typography.body,
+      color: currentColors.textSecondary,
+    },
+    footerContainer: {
+      backgroundColor: currentColors.surface,
+    },
+  });
 
   if (!breakdown) {
     return (
@@ -130,83 +213,3 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  backButton: {
-    padding: spacing.sm,
-  },
-  backButtonText: {
-    ...typography.body,
-    color: colors.primary,
-  },
-  title: {
-    ...typography.h3,
-    color: colors.text,
-  },
-  placeholder: {
-    width: 60,
-  },
-  scrollContent: {
-    padding: spacing.lg,
-  },
-  infoContainer: {
-    marginBottom: spacing.lg,
-  },
-  infoText: {
-    ...typography.body,
-    color: colors.text,
-    fontWeight: '600',
-    marginBottom: spacing.xs,
-  },
-  infoSubtext: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
-  taxSection: {
-    marginBottom: spacing.lg,
-  },
-  benefitsSection: {
-    marginBottom: spacing.lg,
-  },
-  sectionHeader: {
-    ...typography.h4,
-    color: colors.text,
-    marginBottom: spacing.sm,
-    marginTop: spacing.md,
-  },
-  noteContainer: {
-    marginTop: spacing.md,
-  },
-  noteText: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    fontStyle: 'italic',
-    lineHeight: 18,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.lg,
-  },
-  errorText: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  footerContainer: {
-    backgroundColor: colors.surface,
-  },
-});

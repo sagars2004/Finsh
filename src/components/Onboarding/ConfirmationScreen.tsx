@@ -6,8 +6,8 @@ import { Footer } from '../shared/Footer';
 import { ProgressIndicator } from './ProgressIndicator';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { useUser } from '../../context/UserContext';
+import { useTheme } from '../../context/ThemeContext';
 import { formatCurrency } from '../../utils/formatters';
-import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
@@ -20,6 +20,7 @@ interface ConfirmationScreenProps {
 export function ConfirmationScreen({ onComplete, onBack, navigation }: ConfirmationScreenProps) {
   const { onboardingData } = useOnboarding();
   const { setUserData } = useUser();
+  const { currentColors } = useTheme();
 
   const handleComplete = async () => {
     // Combine onboarding data into UserData
@@ -47,6 +48,82 @@ export function ConfirmationScreen({ onComplete, onBack, navigation }: Confirmat
       onComplete();
     }
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: currentColors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      padding: spacing.lg,
+    },
+    content: {
+      flex: 1,
+    },
+    iconContainer: {
+      alignItems: 'center',
+      marginBottom: spacing.xl,
+    },
+    icon: {
+      fontSize: 64,
+    },
+    title: {
+      ...typography.h2,
+      color: currentColors.text,
+      textAlign: 'center',
+      marginBottom: spacing.sm,
+    },
+    subtitle: {
+      ...typography.body,
+      color: currentColors.textSecondary,
+      textAlign: 'center',
+      marginBottom: spacing.xl,
+    },
+    summaryCard: {
+      marginBottom: spacing.xl,
+      backgroundColor: currentColors.surface,
+    },
+    summaryRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: currentColors.borderLight,
+    },
+    summaryLabel: {
+      ...typography.body,
+      color: currentColors.textSecondary,
+    },
+    summaryValue: {
+      ...typography.body,
+      color: currentColors.text,
+      fontWeight: '600',
+    },
+    message: {
+      ...typography.body,
+      color: currentColors.textSecondary,
+      textAlign: 'center',
+      fontStyle: 'italic',
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      gap: spacing.md,
+      paddingVertical: spacing.lg,
+    },
+    backButton: {
+      flex: 1,
+    },
+    button: {
+      flex: 1,
+    },
+    buttonContent: {
+      paddingVertical: spacing.sm,
+    },
+    footerContainer: {
+      backgroundColor: currentColors.surface,
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -106,8 +183,8 @@ export function ConfirmationScreen({ onComplete, onBack, navigation }: Confirmat
           <Button
             mode="outlined"
             onPress={onBack}
-            buttonColor={colors.surface}
-            textColor={colors.primary}
+            buttonColor={currentColors.surface}
+            textColor={currentColors.primary}
             style={[styles.backButton, styles.button]}
             contentStyle={styles.buttonContent}
           >
@@ -116,8 +193,8 @@ export function ConfirmationScreen({ onComplete, onBack, navigation }: Confirmat
           <Button
             mode="contained"
             onPress={handleComplete}
-            buttonColor={colors.primary}
-            textColor={colors.surface}
+            buttonColor={currentColors.primary}
+            textColor={currentColors.surface}
             style={styles.button}
             contentStyle={styles.buttonContent}
           >
@@ -131,78 +208,3 @@ export function ConfirmationScreen({ onComplete, onBack, navigation }: Confirmat
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: spacing.lg,
-  },
-  content: {
-    flex: 1,
-  },
-  iconContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  icon: {
-    fontSize: 64,
-  },
-  title: {
-    ...typography.h2,
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-  },
-  summaryCard: {
-    marginBottom: spacing.xl,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  summaryLabel: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  summaryValue: {
-    ...typography.body,
-    color: colors.text,
-    fontWeight: '600',
-  },
-  message: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    paddingVertical: spacing.lg,
-  },
-  backButton: {
-    flex: 1,
-  },
-  button: {
-    flex: 1,
-  },
-  buttonContent: {
-    paddingVertical: spacing.sm,
-  },
-  footerContainer: {
-    backgroundColor: colors.surface,
-  },
-});

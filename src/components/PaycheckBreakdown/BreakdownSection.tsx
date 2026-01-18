@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { Card } from 'react-native-paper';
+import { useTheme } from '../../context/ThemeContext';
 import { formatCurrency } from '../../utils/formatters';
-import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
@@ -19,17 +19,30 @@ export function BreakdownSection({
   description,
   variant = 'default',
 }: BreakdownSectionProps) {
+  const { currentColors } = useTheme();
+
   const getVariantStyles = (): { container?: ViewStyle; amount?: TextStyle } => {
     switch (variant) {
       case 'primary':
         return {
-          container: styles.sectionPrimary,
-          amount: styles.amountPrimary,
+          container: {
+            backgroundColor: currentColors.primaryLight + '10',
+            borderWidth: 2,
+            borderColor: currentColors.primary,
+          },
+          amount: {
+            color: currentColors.primary,
+          },
         };
       case 'emphasis':
         return {
-          container: styles.sectionEmphasis,
-          amount: styles.amountEmphasis,
+          container: {
+            backgroundColor: currentColors.surfaceSecondary,
+          },
+          amount: {
+            ...typography.h3,
+            color: currentColors.text,
+          },
         };
       default:
         return {};
@@ -38,23 +51,57 @@ export function BreakdownSection({
 
   const variantStyles = getVariantStyles();
 
-  const cardStyles: ViewStyle[] = [styles.section];
+  const cardStyles: ViewStyle[] = [
+    {
+      marginBottom: spacing.md,
+      backgroundColor: currentColors.surface,
+    },
+  ];
   if (variantStyles.container) {
-    cardStyles.push(variantStyles.container);
+    cardStyles.push(variantStyles.container as ViewStyle);
   }
 
-  const amountStyles: TextStyle[] = [styles.amount];
+  const amountStyles: TextStyle[] = [
+    {
+      ...typography.h4,
+      color: currentColors.text,
+    },
+  ];
   if (variantStyles.amount) {
-    amountStyles.push(variantStyles.amount);
+    amountStyles.push(variantStyles.amount as TextStyle);
   }
 
   return (
     <Card style={cardStyles}>
       <Card.Content>
-        <View style={styles.row}>
-          <View style={styles.labelContainer}>
-            <Text style={styles.label}>{label}</Text>
-            {description && <Text style={styles.description}>{description}</Text>}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                ...typography.body,
+                color: currentColors.text,
+                fontWeight: '500',
+                marginBottom: spacing.xs,
+              }}
+            >
+              {label}
+            </Text>
+            {description && (
+              <Text
+                style={{
+                  ...typography.caption,
+                  color: currentColors.textSecondary,
+                }}
+              >
+                {description}
+              </Text>
+            )}
           </View>
           <Text style={amountStyles}>{formatCurrency(amount)}</Text>
         </View>
@@ -62,46 +109,3 @@ export function BreakdownSection({
     </Card>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    marginBottom: spacing.md,
-  },
-  sectionPrimary: {
-    backgroundColor: colors.primaryLight + '10',
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
-  sectionEmphasis: {
-    backgroundColor: colors.surfaceSecondary,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  labelContainer: {
-    flex: 1,
-  },
-  label: {
-    ...typography.body,
-    color: colors.text,
-    fontWeight: '500',
-    marginBottom: spacing.xs,
-  },
-  description: {
-    ...typography.caption,
-    color: colors.textSecondary,
-  },
-  amount: {
-    ...typography.h4,
-    color: colors.text,
-  },
-  amountPrimary: {
-    color: colors.primary,
-  },
-  amountEmphasis: {
-    ...typography.h3,
-    color: colors.text,
-  },
-});
