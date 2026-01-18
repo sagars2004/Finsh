@@ -1,0 +1,26 @@
+language = "nodejs"
+run = "npm start"
+
+[deploy]
+run = ["sh", "-c", "npm run web"]
+
+[env]
+NODE_ENV = "development"
+
+[packager]
+language = "nodejs"
+ignoredPackages = ["**/node_modules/**"]
+
+[gitHubImport]
+requiredFiles = [".replit", "package.json"]
+
+[unitTest]
+language = "nodejs"
+
+[languages]
+
+[languages.javascript]
+pattern = "**/*.{js,jsx}"
+
+[languages.typescript]
+pattern = "**/*.{ts,tsx}"
