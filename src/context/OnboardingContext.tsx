@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { SalaryInput, ExpenseContext } from '../types/user';
 
 interface OnboardingData {
+  name?: string;
   salary: Partial<SalaryInput>;
   expenses: Partial<ExpenseContext>;
   currentStep: number;
@@ -9,6 +10,7 @@ interface OnboardingData {
 
 interface OnboardingContextType {
   onboardingData: OnboardingData;
+  updateName: (name: string) => void;
   updateSalary: (salary: Partial<SalaryInput>) => void;
   updateExpenses: (expenses: Partial<ExpenseContext>) => void;
   setCurrentStep: (step: number) => void;
@@ -18,6 +20,7 @@ interface OnboardingContextType {
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
 
 const initialData: OnboardingData = {
+  name: undefined,
   salary: {},
   expenses: {},
   currentStep: 1,
@@ -25,6 +28,10 @@ const initialData: OnboardingData = {
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [onboardingData, setOnboardingData] = useState<OnboardingData>(initialData);
+
+  const updateName = (name: string) => {
+    setOnboardingData((prev) => ({ ...prev, name: name.trim() || undefined }));
+  };
 
   const updateSalary = (salary: Partial<SalaryInput>) => {
     setOnboardingData((prev) => ({
@@ -52,6 +59,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     <OnboardingContext.Provider
       value={{
         onboardingData,
+        updateName,
         updateSalary,
         updateExpenses,
         setCurrentStep,

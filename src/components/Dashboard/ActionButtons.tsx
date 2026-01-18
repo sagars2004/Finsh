@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button } from '../shared/Button';
+import { Button } from 'react-native-paper';
+import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
+import { typography } from '../../theme/typography';
 
 interface ActionButtonsProps {
   onViewTradeoffs: () => void;
@@ -12,16 +14,29 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
   return (
     <View style={styles.container}>
       <Button
-        title="View Tradeoff Cards"
+        mode="contained"
         onPress={onViewTradeoffs}
+        buttonColor={colors.primary}
+        textColor={colors.surface}
         style={styles.button}
-      />
+        contentStyle={styles.buttonContent}
+        labelStyle={styles.buttonLabel}
+        icon="swap-horizontal"
+      >
+        View Tradeoff Cards
+      </Button>
       <Button
-        title="View Paycheck Breakdown"
+        mode="outlined"
         onPress={onViewBreakdown}
-        variant="secondary"
+        buttonColor={colors.surfaceSecondary}
+        textColor={colors.primary}
         style={styles.button}
-      />
+        contentStyle={styles.buttonContent}
+        labelStyle={styles.buttonLabel}
+        icon="calculator"
+      >
+        View Paycheck Breakdown
+      </Button>
     </View>
   );
 }
@@ -32,5 +47,14 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
+    borderRadius: 8,
+  },
+  buttonContent: {
+    paddingVertical: spacing.md,
+    minHeight: spacing.touchTarget,
+  },
+  buttonLabel: {
+    ...typography.button,
+    fontSize: 16,
   },
 });

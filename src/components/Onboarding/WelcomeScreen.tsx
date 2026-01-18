@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../shared/Button';
+import { Button } from 'react-native-paper';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -11,6 +11,7 @@ interface WelcomeScreenProps {
 }
 
 export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
@@ -32,7 +33,17 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
           </Text>
         </View>
         <View style={styles.buttonContainer}>
-          <Button title="Let's get started" onPress={onNext} />
+          <Button 
+            mode="contained" 
+            onPress={onNext}
+            buttonColor={colors.primary}
+            textColor={colors.surface}
+            style={styles.button}
+            contentStyle={styles.buttonContent}
+            labelStyle={styles.buttonLabel}
+          >
+            Let's get started
+          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -79,8 +90,18 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: spacing.md,
+    marginTop: spacing.lg,
   },
   buttonContainer: {
     paddingVertical: spacing.lg,
+  },
+  button: {
+    width: '100%',
+  },
+  buttonContent: {
+    paddingVertical: spacing.sm,
+  },
+  buttonLabel: {
+    ...typography.button,
   },
 });

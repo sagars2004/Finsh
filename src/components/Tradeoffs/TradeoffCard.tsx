@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Card } from '../shared/Card';
+import { Card } from 'react-native-paper';
 import { TradeoffOption } from '../../types/tradeoff';
 import { formatCurrency, formatMonthlyCurrency } from '../../utils/formatters';
 import { colors } from '../../theme/colors';
@@ -60,12 +60,14 @@ export function TradeoffCard({ title, optionA, optionB }: TradeoffCardProps) {
 
   return (
     <Card style={styles.card}>
-      <Text style={styles.cardTitle}>{title}</Text>
-      <View style={styles.optionsContainer}>
-        {renderOption(optionA, true)}
-        <View style={styles.divider} />
-        {renderOption(optionB, false)}
-      </View>
+      <Card.Content>
+        <Text style={styles.cardTitle}>{title}</Text>
+        <View style={styles.optionsContainer}>
+          {renderOption(optionA, true)}
+          <View style={styles.divider} />
+          {renderOption(optionB, false)}
+        </View>
+      </Card.Content>
     </Card>
   );
 }

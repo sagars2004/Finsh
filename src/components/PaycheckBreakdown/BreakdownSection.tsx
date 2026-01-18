@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { Card } from '../shared/Card';
+import { Card } from 'react-native-paper';
 import { formatCurrency } from '../../utils/formatters';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
@@ -50,13 +50,15 @@ export function BreakdownSection({
 
   return (
     <Card style={cardStyles}>
-      <View style={styles.row}>
-        <View style={styles.labelContainer}>
-          <Text style={styles.label}>{label}</Text>
-          {description && <Text style={styles.description}>{description}</Text>}
+      <Card.Content>
+        <View style={styles.row}>
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>{label}</Text>
+            {description && <Text style={styles.description}>{description}</Text>}
+          </View>
+          <Text style={amountStyles}>{formatCurrency(amount)}</Text>
         </View>
-        <Text style={amountStyles}>{formatCurrency(amount)}</Text>
-      </View>
+      </Card.Content>
     </Card>
   );
 }

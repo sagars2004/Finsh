@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../shared/Button';
+import { Button } from 'react-native-paper';
 import { ProgressIndicator } from './ProgressIndicator';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { colors } from '../../theme/colors';
@@ -156,12 +156,26 @@ export function ContextScreen({ onNext, onBack }: ContextScreenProps) {
 
         <View style={styles.buttonContainer}>
           <Button
-            title="Back"
-            variant="outline"
+            mode="outlined"
             onPress={onBack}
-            style={styles.backButton}
-          />
-          <Button title="Next" onPress={handleNext} disabled={!livingSituation} />
+            buttonColor={colors.surface}
+            textColor={colors.primary}
+            style={[styles.backButton, styles.button]}
+            contentStyle={styles.buttonContent}
+          >
+            Back
+          </Button>
+          <Button
+            mode="contained"
+            onPress={handleNext}
+            buttonColor={colors.primary}
+            textColor={colors.surface}
+            disabled={!livingSituation}
+            style={styles.button}
+            contentStyle={styles.buttonContent}
+          >
+            Next
+          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -248,5 +262,11 @@ const styles = StyleSheet.create({
   },
   backButton: {
     flex: 1,
+  },
+  button: {
+    flex: 1,
+  },
+  buttonContent: {
+    paddingVertical: spacing.sm,
   },
 });

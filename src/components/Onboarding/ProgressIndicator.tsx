@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { ProgressBar } from 'react-native-paper';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -10,19 +11,18 @@ interface ProgressIndicatorProps {
 }
 
 export function ProgressIndicator({ currentStep, totalSteps }: ProgressIndicatorProps) {
+  const progress = currentStep / totalSteps;
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>
         Step {currentStep} of {totalSteps}
       </Text>
-      <View style={styles.progressBar}>
-        <View
-          style={[
-            styles.progressFill,
-            { width: `${(currentStep / totalSteps) * 100}%` },
-          ]}
-        />
-      </View>
+      <ProgressBar
+        progress={progress}
+        color={colors.primary}
+        style={styles.progressBar}
+      />
     </View>
   );
 }
@@ -39,13 +39,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 4,
+    borderRadius: 2,
     backgroundColor: colors.borderLight,
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: 2,
   },
 });

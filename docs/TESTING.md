@@ -1,6 +1,6 @@
-# Testing Guide for PocketPrism
+# Testing Guide for Finsh
 
-This guide covers all the ways you can test the PocketPrism app during development.
+This guide covers all the ways you can test the Finsh app during development.
 
 ## Quick Start Testing
 

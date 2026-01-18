@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Card } from 'react-native-paper';
 import { BreakdownSection } from './BreakdownSection';
 import { useUser } from '../../context/UserContext';
 import { estimateTakeHome } from '../../services/calculations/paycheck';
@@ -43,15 +44,17 @@ export function BreakdownScreen({ onBack }: BreakdownScreenProps) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoText}>
-            You're early — here's how to use this info
-          </Text>
-          <Text style={styles.infoSubtext}>
-            This breakdown shows where your money goes before it reaches your bank account.
-            Understanding these deductions helps you plan your budget accurately.
-          </Text>
-        </View>
+        <Card style={styles.infoContainer}>
+          <Card.Content>
+            <Text style={styles.infoText}>
+              You're early — here's how to use this info
+            </Text>
+            <Text style={styles.infoSubtext}>
+              This breakdown shows where your money goes before it reaches your bank account.
+              Understanding these deductions helps you plan your budget accurately.
+            </Text>
+          </Card.Content>
+        </Card>
 
         <BreakdownSection
           label="Gross Pay"
@@ -110,12 +113,14 @@ export function BreakdownScreen({ onBack }: BreakdownScreenProps) {
           variant="primary"
         />
 
-        <View style={styles.noteContainer}>
-          <Text style={styles.noteText}>
-            Note: These are estimates based on standard deductions. Your actual paycheck
-            may vary based on your specific benefit elections and tax situation.
-          </Text>
-        </View>
+        <Card style={styles.noteContainer}>
+          <Card.Content>
+            <Text style={styles.noteText}>
+              Note: These are estimates based on standard deductions. Your actual paycheck
+              may vary based on your specific benefit elections and tax situation.
+            </Text>
+          </Card.Content>
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );
@@ -152,9 +157,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   infoContainer: {
-    backgroundColor: colors.surfaceSecondary,
-    padding: spacing.md,
-    borderRadius: 8,
     marginBottom: spacing.lg,
   },
   infoText: {
@@ -182,9 +184,6 @@ const styles = StyleSheet.create({
   },
   noteContainer: {
     marginTop: spacing.md,
-    padding: spacing.md,
-    backgroundColor: colors.surfaceSecondary,
-    borderRadius: 8,
   },
   noteText: {
     ...typography.caption,

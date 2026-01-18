@@ -1,6 +1,6 @@
 # Future Integrations
 
-This document outlines planned integrations for PocketPrism beyond the MVP.
+This document outlines planned integrations for Finsh beyond the MVP.
 
 ## Capacitor
 

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../shared/Button';
-import { Input } from '../shared/Input';
+import { Button, TextInput } from 'react-native-paper';
 import { Picker } from '../shared/Picker';
 import { ProgressIndicator } from './ProgressIndicator';
 import { useOnboarding } from '../../context/OnboardingContext';
@@ -75,17 +74,20 @@ export function SalaryInfoScreen({ onNext, onBack }: SalaryInfoScreenProps) {
             We'll use this to calculate your take-home pay and show you personalized insights.
           </Text>
 
-          <Input
+          <TextInput
             label="Annual Salary"
             placeholder="$75,000"
+            mode="outlined"
             keyboardType="numeric"
             value={annualSalary}
             onChangeText={(text) => {
               setAnnualSalary(text);
               setError('');
             }}
-            error={error}
+            error={!!error}
+            style={styles.input}
           />
+          {error && <Text style={styles.errorText}>{error}</Text>}
 
           <Picker
             label="Pay Frequency"
@@ -118,12 +120,25 @@ export function SalaryInfoScreen({ onNext, onBack }: SalaryInfoScreenProps) {
 
         <View style={styles.buttonContainer}>
           <Button
-            title="Back"
-            variant="outline"
+            mode="outlined"
             onPress={onBack}
-            style={styles.backButton}
-          />
-          <Button title="Next" onPress={handleNext} />
+            buttonColor={colors.surface}
+            textColor={colors.primary}
+            style={[styles.backButton, styles.button]}
+            contentStyle={styles.buttonContent}
+          >
+            Back
+          </Button>
+          <Button
+            mode="contained"
+            onPress={handleNext}
+            buttonColor={colors.primary}
+            textColor={colors.surface}
+            style={styles.button}
+            contentStyle={styles.buttonContent}
+          >
+            Next
+          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -159,5 +174,21 @@ const styles = StyleSheet.create({
   },
   backButton: {
     flex: 1,
+  },
+  button: {
+    flex: 1,
+  },
+  buttonContent: {
+    paddingVertical: spacing.sm,
+  },
+  input: {
+    marginBottom: spacing.md,
+  },
+  errorText: {
+    ...typography.caption,
+    color: colors.error,
+    marginTop: spacing.xs * -1,
+    marginBottom: spacing.md,
+    marginLeft: spacing.sm,
   },
 });

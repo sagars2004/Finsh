@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../shared/Button';
+import { Button, Card } from 'react-native-paper';
 import { ProgressIndicator } from './ProgressIndicator';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { useUser } from '../../context/UserContext';
@@ -28,6 +28,7 @@ export function ConfirmationScreen({ onComplete, onBack }: ConfirmationScreenPro
       onboardingData.expenses.livingSituation
     ) {
       await setUserData({
+        name: onboardingData.name,
         salary: {
           annualSalary: onboardingData.salary.annualSalary,
           payFrequency: onboardingData.salary.payFrequency,
@@ -61,36 +62,38 @@ export function ConfirmationScreen({ onComplete, onBack }: ConfirmationScreenPro
             Here's a summary of what you've shared:
           </Text>
 
-          <View style={styles.summaryCard}>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Annual Salary:</Text>
-              <Text style={styles.summaryValue}>
-                {formatCurrency(onboardingData.salary.annualSalary || 0)}
-              </Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Pay Frequency:</Text>
-              <Text style={styles.summaryValue}>
-                {onboardingData.salary.payFrequency
-                  ? onboardingData.salary.payFrequency.charAt(0).toUpperCase() +
-                    onboardingData.salary.payFrequency.slice(1).replace(/([A-Z])/g, ' $1')
-                  : 'Not set'}
-              </Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>State:</Text>
-              <Text style={styles.summaryValue}>{onboardingData.salary.state || 'Not set'}</Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Living Situation:</Text>
-              <Text style={styles.summaryValue}>
-                {onboardingData.expenses.livingSituation
-                  ? onboardingData.expenses.livingSituation.charAt(0).toUpperCase() +
-                    onboardingData.expenses.livingSituation.slice(1)
-                  : 'Not set'}
-              </Text>
-            </View>
-          </View>
+          <Card style={styles.summaryCard}>
+            <Card.Content>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Annual Salary:</Text>
+                <Text style={styles.summaryValue}>
+                  {formatCurrency(onboardingData.salary.annualSalary || 0)}
+                </Text>
+              </View>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Pay Frequency:</Text>
+                <Text style={styles.summaryValue}>
+                  {onboardingData.salary.payFrequency
+                    ? onboardingData.salary.payFrequency.charAt(0).toUpperCase() +
+                      onboardingData.salary.payFrequency.slice(1).replace(/([A-Z])/g, ' $1')
+                    : 'Not set'}
+                </Text>
+              </View>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>State:</Text>
+                <Text style={styles.summaryValue}>{onboardingData.salary.state || 'Not set'}</Text>
+              </View>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Living Situation:</Text>
+                <Text style={styles.summaryValue}>
+                  {onboardingData.expenses.livingSituation
+                    ? onboardingData.expenses.livingSituation.charAt(0).toUpperCase() +
+                      onboardingData.expenses.livingSituation.slice(1)
+                    : 'Not set'}
+                </Text>
+              </View>
+            </Card.Content>
+          </Card>
 
           <Text style={styles.message}>
             Ready to see your first paycheck breakdown? Let's go!
@@ -99,12 +102,25 @@ export function ConfirmationScreen({ onComplete, onBack }: ConfirmationScreenPro
 
         <View style={styles.buttonContainer}>
           <Button
-            title="Back"
-            variant="outline"
+            mode="outlined"
             onPress={onBack}
-            style={styles.backButton}
-          />
-          <Button title="Go to Dashboard" onPress={handleComplete} />
+            buttonColor={colors.surface}
+            textColor={colors.primary}
+            style={[styles.backButton, styles.button]}
+            contentStyle={styles.buttonContent}
+          >
+            Back
+          </Button>
+          <Button
+            mode="contained"
+            onPress={handleComplete}
+            buttonColor={colors.primary}
+            textColor={colors.surface}
+            style={styles.button}
+            contentStyle={styles.buttonContent}
+          >
+            Go to Dashboard
+          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -143,12 +159,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   summaryCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: spacing.lg,
     marginBottom: spacing.xl,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   summaryRow: {
     flexDirection: 'row',
@@ -179,5 +190,11 @@ const styles = StyleSheet.create({
   },
   backButton: {
     flex: 1,
+  },
+  button: {
+    flex: 1,
+  },
+  buttonContent: {
+    paddingVertical: spacing.sm,
   },
 });

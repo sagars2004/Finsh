@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button } from 'react-native-paper';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { TradeoffCard } from './TradeoffCard';
 import { getPlaceholderTradeoffs } from '../../utils/placeholders';
 import { generateTradeoffs } from '../../services/replit/ai';
@@ -9,6 +11,8 @@ import { TradeoffCard as TradeoffCardType } from '../../types/tradeoff';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
+
+const SWIPE_THRESHOLD = 50;
 
 interface TradeoffCardsScreenProps {
   onBack: () => void;
@@ -19,6 +23,7 @@ export function TradeoffCardsScreen({ onBack }: TradeoffCardsScreenProps) {
   const [cards, setCards] = useState<TradeoffCardType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const translateX = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     async function loadTradeoffs() {
@@ -40,6 +45,11 @@ export function TradeoffCardsScreen({ onBack }: TradeoffCardsScreenProps) {
     loadTradeoffs();
   }, [userData]);
 
+  // Reset translateX when index changes
+  useEffect(() => {
+    translateX.setValue(0);
+  }, [currentIndex, translateX]);
+
   const handleNext = () => {
     if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -52,11 +62,69 @@ export function TradeoffCardsScreen({ onBack }: TradeoffCardsScreenProps) {
     }
   };
 
-  if (loading || cards.length === 0) {
+  const onGestureEvent = Animated.event(
+    [{ nativeEvent: { translationX: translateX } }],
+    { useNativeDriver: true }
+  );
+
+  const onHandlerStateChange = (event: any) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      const { translationX, velocityX } = event.nativeEvent;
+      const swipeThreshold = Math.abs(translationX) > SWIPE_THRESHOLD || Math.abs(velocityX) > 500;
+
+      if (swipeThreshold) {
+        if (translationX > 0 && currentIndex > 0) {
+          // Swipe right - go to previous
+          handlePrevious();
+        } else if (translationX < 0 && currentIndex < cards.length - 1) {
+          // Swipe left - go to next
+          handleNext();
+        }
+      }
+
+      // Reset position
+      Animated.spring(translateX, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    }
+  };
+
+  const cardStyle = {
+    transform: [{ translateX }],
+  };
+
+  if (loading) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading tradeoffs...</Text>
+          <Text style={styles.loadingIcon}>💭</Text>
+          <Text style={styles.loadingText}>Generating personalized tradeoffs...</Text>
+          <Text style={styles.loadingSubtext}>This will just take a moment</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (cards.length === 0) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingIcon}>😕</Text>
+          <Text style={styles.loadingText}>No tradeoffs available</Text>
+          <Text style={styles.loadingSubtext}>Please complete onboarding first</Text>
         </View>
       </SafeAreaView>
     );
@@ -74,48 +142,56 @@ export function TradeoffCardsScreen({ onBack }: TradeoffCardsScreenProps) {
           {currentIndex + 1} of {cards.length}
         </Text>
       </View>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+      <PanGestureHandler
+        onGestureEvent={onGestureEvent}
+        onHandlerStateChange={onHandlerStateChange}
+        activeOffsetX={[-10, 10]}
+        failOffsetY={[-5, 5]}
       >
-        <TradeoffCard
-          title={currentCard.title}
-          optionA={currentCard.optionA}
-          optionB={currentCard.optionB}
-        />
-      </ScrollView>
+        <Animated.View style={styles.gestureContainer}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={true}
+          >
+            <Animated.View style={cardStyle}>
+              <TradeoffCard
+                title={currentCard.title}
+                optionA={currentCard.optionA}
+                optionB={currentCard.optionB}
+              />
+            </Animated.View>
+            <View style={styles.swipeHint}>
+              <Text style={styles.swipeHintText}>
+                👆 Swipe left or right to navigate • Tap buttons below
+              </Text>
+            </View>
+          </ScrollView>
+        </Animated.View>
+      </PanGestureHandler>
       <View style={styles.navigationContainer}>
-        <TouchableOpacity
+        <Button
+          mode="outlined"
           onPress={handlePrevious}
           disabled={currentIndex === 0}
-          style={[styles.navButton, currentIndex === 0 ? styles.navButtonDisabled : null].filter(Boolean)}
+          buttonColor={colors.surface}
+          textColor={currentIndex === 0 ? colors.textTertiary : colors.primary}
+          style={styles.navButton}
+          contentStyle={styles.navButtonContent}
         >
-          <Text
-            style={[
-              styles.navButtonText,
-              currentIndex === 0 ? styles.navButtonTextDisabled : null,
-            ].filter(Boolean)}
-          >
-            ← Previous
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+          ← Previous
+        </Button>
+        <Button
+          mode="outlined"
           onPress={handleNext}
           disabled={currentIndex === cards.length - 1}
-          style={[
-            styles.navButton,
-            currentIndex === cards.length - 1 ? styles.navButtonDisabled : null,
-          ].filter(Boolean)}
+          buttonColor={colors.surface}
+          textColor={currentIndex === cards.length - 1 ? colors.textTertiary : colors.primary}
+          style={styles.navButton}
+          contentStyle={styles.navButtonContent}
         >
-          <Text
-            style={[
-              styles.navButtonText,
-              currentIndex === cards.length - 1 ? styles.navButtonTextDisabled : null,
-            ].filter(Boolean)}
-          >
-            Next →
-          </Text>
-        </TouchableOpacity>
+          Next →
+        </Button>
       </View>
       <View style={styles.footer}>
         <Text style={styles.footerText}>
@@ -150,8 +226,12 @@ const styles = StyleSheet.create({
     ...typography.bodySmall,
     color: colors.textSecondary,
   },
+  gestureContainer: {
+    flex: 1,
+  },
   scrollContent: {
     padding: spacing.lg,
+    flexGrow: 1,
   },
   navigationContainer: {
     flexDirection: 'row',
@@ -163,23 +243,9 @@ const styles = StyleSheet.create({
   },
   navButton: {
     flex: 1,
-    padding: spacing.md,
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
-  navButtonDisabled: {
-    opacity: 0.5,
-  },
-  navButtonText: {
-    ...typography.body,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  navButtonTextDisabled: {
-    color: colors.textTertiary,
+  navButtonContent: {
+    paddingVertical: spacing.sm,
   },
   footer: {
     padding: spacing.md,
@@ -198,8 +264,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing.lg,
   },
+  loadingIcon: {
+    fontSize: 48,
+    marginBottom: spacing.md,
+  },
   loadingText: {
+    ...typography.h3,
+    color: colors.text,
+    marginBottom: spacing.xs,
+    textAlign: 'center',
+  },
+  loadingSubtext: {
     ...typography.body,
     color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  swipeHint: {
+    marginTop: spacing.md,
+    padding: spacing.sm,
+    alignItems: 'center',
+  },
+  swipeHintText: {
+    ...typography.caption,
+    color: colors.textTertiary,
+    fontStyle: 'italic',
   },
 });
