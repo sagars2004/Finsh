@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Card } from 'react-native-paper';
+import { Footer } from '../shared/Footer';
 import { ProgressIndicator } from './ProgressIndicator';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { useUser } from '../../context/UserContext';
@@ -13,9 +14,10 @@ import { spacing } from '../../theme/spacing';
 interface ConfirmationScreenProps {
   onComplete: () => void;
   onBack: () => void;
+  navigation?: any;
 }
 
-export function ConfirmationScreen({ onComplete, onBack }: ConfirmationScreenProps) {
+export function ConfirmationScreen({ onComplete, onBack, navigation }: ConfirmationScreenProps) {
   const { onboardingData } = useOnboarding();
   const { setUserData } = useUser();
 
@@ -123,6 +125,9 @@ export function ConfirmationScreen({ onComplete, onBack }: ConfirmationScreenPro
           </Button>
         </View>
       </ScrollView>
+      <SafeAreaView edges={['bottom']} style={styles.footerContainer}>
+        <Footer navigation={navigation} />
+      </SafeAreaView>
     </SafeAreaView>
   );
 }
@@ -196,5 +201,8 @@ const styles = StyleSheet.create({
   },
   buttonContent: {
     paddingVertical: spacing.sm,
+  },
+  footerContainer: {
+    backgroundColor: colors.surface,
   },
 });

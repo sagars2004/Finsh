@@ -8,6 +8,7 @@ import { ConfirmationScreen } from '../components/Onboarding/ConfirmationScreen'
 import { DashboardScreen } from '../components/Dashboard/DashboardScreen';
 import { TradeoffCardsScreen } from '../components/Tradeoffs/TradeoffCardsScreen';
 import { BreakdownScreen } from '../components/PaycheckBreakdown/BreakdownScreen';
+import { SettingsScreen } from '../components/Settings/SettingsScreen';
 import { useUser } from '../context/UserContext';
 
 export type RootStackParamList = {
@@ -18,6 +19,7 @@ export type RootStackParamList = {
   Dashboard: undefined;
   Tradeoffs: undefined;
   Breakdown: undefined;
+  Settings: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -45,6 +47,9 @@ export function AppNavigator() {
             <WelcomeScreen
               {...props}
               onNext={() => props.navigation.navigate('SalaryInfo')}
+              // TODO: Implement auth handlers when authentication is added
+              // onSignUp={() => props.navigation.navigate('SignUp')}
+              // onLogIn={() => props.navigation.navigate('LogIn')}
             />
           )}
         </Stack.Screen>
@@ -52,6 +57,7 @@ export function AppNavigator() {
           {(props) => (
             <SalaryInfoScreen
               {...props}
+              navigation={props.navigation}
               onNext={() => props.navigation.navigate('Context')}
               onBack={() => props.navigation.goBack()}
             />
@@ -61,6 +67,7 @@ export function AppNavigator() {
           {(props) => (
             <ContextScreen
               {...props}
+              navigation={props.navigation}
               onNext={() => props.navigation.navigate('Confirmation')}
               onBack={() => props.navigation.goBack()}
             />
@@ -70,6 +77,7 @@ export function AppNavigator() {
           {(props) => (
             <ConfirmationScreen
               {...props}
+              navigation={props.navigation}
               onComplete={() => props.navigation.reset({
                 index: 0,
                 routes: [{ name: 'Dashboard' }],
@@ -82,6 +90,7 @@ export function AppNavigator() {
           {(props) => (
             <DashboardScreen
               {...props}
+              navigation={props.navigation}
               onViewTradeoffs={() => props.navigation.navigate('Tradeoffs')}
               onViewBreakdown={() => props.navigation.navigate('Breakdown')}
             />
@@ -91,6 +100,7 @@ export function AppNavigator() {
           {(props) => (
             <TradeoffCardsScreen
               {...props}
+              navigation={props.navigation}
               onBack={() => props.navigation.goBack()}
             />
           )}
@@ -99,7 +109,27 @@ export function AppNavigator() {
           {(props) => (
             <BreakdownScreen
               {...props}
+              navigation={props.navigation}
               onBack={() => props.navigation.goBack()}
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Settings">
+          {(props) => (
+            <SettingsScreen
+              {...props}
+              navigation={props.navigation}
+              onBack={() => props.navigation.goBack()}
+              onNavigateToHome={() => {
+                props.navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Dashboard' }],
+                });
+              }}
+              onNavigateToProfile={() => {
+                // TODO: Navigate to profile screen when created
+                props.navigation.goBack();
+              }}
             />
           )}
         </Stack.Screen>

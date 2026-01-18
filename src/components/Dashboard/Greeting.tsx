@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '../../theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
@@ -9,7 +9,24 @@ interface GreetingProps {
 }
 
 export function Greeting({ name }: GreetingProps) {
+  const { currentColors } = useTheme();
   const greeting = name ? `Hi ${name}!` : 'Hi there!';
+
+  const styles = StyleSheet.create({
+    container: {
+      marginBottom: spacing.xl,
+    },
+    greeting: {
+      ...typography.h2,
+      color: currentColors.text,
+      marginBottom: spacing.xs,
+    },
+    subtitle: {
+      ...typography.bodyLarge,
+      color: currentColors.textSecondary,
+      lineHeight: 24,
+    },
+  });
   
   return (
     <View style={styles.container}>
@@ -18,19 +35,3 @@ export function Greeting({ name }: GreetingProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.xl,
-  },
-  greeting: {
-    ...typography.h2,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    ...typography.bodyLarge,
-    color: colors.textSecondary,
-    lineHeight: 24,
-  },
-});

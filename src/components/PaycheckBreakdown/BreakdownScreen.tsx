@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from 'react-native-paper';
+import { Footer } from '../shared/Footer';
 import { BreakdownSection } from './BreakdownSection';
 import { useUser } from '../../context/UserContext';
 import { estimateTakeHome } from '../../services/calculations/paycheck';
@@ -11,9 +12,10 @@ import { spacing } from '../../theme/spacing';
 
 interface BreakdownScreenProps {
   onBack: () => void;
+  navigation?: any;
 }
 
-export function BreakdownScreen({ onBack }: BreakdownScreenProps) {
+export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
   const { userData } = useUser();
 
   const breakdown = useMemo(() => {
@@ -122,6 +124,9 @@ export function BreakdownScreen({ onBack }: BreakdownScreenProps) {
           </Card.Content>
         </Card>
       </ScrollView>
+      <SafeAreaView edges={['bottom']} style={styles.footerContainer}>
+        <Footer navigation={navigation} />
+      </SafeAreaView>
     </SafeAreaView>
   );
 }
@@ -200,5 +205,8 @@ const styles = StyleSheet.create({
   errorText: {
     ...typography.body,
     color: colors.textSecondary,
+  },
+  footerContainer: {
+    backgroundColor: colors.surface,
   },
 });

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "PocketPrism",
-    "slug": "pocket-prism",
+    "name": "Finsh",
+    "slug": "finsh",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.pocketprism.app",
+      "bundleIdentifier": "com.finsh.app",
       "buildNumber": "1",
       "infoPlist": {
         "UIRequiresFullScreen": true
@@ -27,7 +27,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.pocketprism.app"
+      "package": "com.finsh.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

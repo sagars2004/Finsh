@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { Picker as RNPicker } from '@react-native-picker/picker';
-import { colors } from '../../theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
@@ -35,12 +35,44 @@ export function Picker({
   placeholder = 'Select an option',
   error,
 }: PickerProps) {
+  const { currentColors } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
 
   const selectedItem = items.find((item) => item.value === selectedValue);
 
   // Use native Picker on Android, modal picker on iOS
   if (Platform.OS === 'android') {
+    const styles = StyleSheet.create({
+      container: {
+        marginBottom: spacing.md,
+      },
+      label: {
+        ...typography.bodySmall,
+        color: currentColors.text,
+        marginBottom: spacing.sm,
+        fontWeight: '500',
+      },
+      pickerWrapper: {
+        borderWidth: 1,
+        borderColor: currentColors.border,
+        borderRadius: 8,
+        backgroundColor: currentColors.surface,
+        overflow: 'hidden',
+      },
+      pickerWrapperError: {
+        borderColor: currentColors.error,
+      },
+      picker: {
+        height: spacing.touchTarget,
+        color: currentColors.text,
+      },
+      errorText: {
+        ...typography.caption,
+        color: currentColors.error,
+        marginTop: spacing.xs,
+      },
+    });
+
     return (
       <View style={styles.container}>
         {label && <Text style={styles.label}>{label}</Text>}
@@ -49,7 +81,7 @@ export function Picker({
             selectedValue={selectedValue}
             onValueChange={onValueChange}
             style={styles.picker}
-            dropdownIconColor={colors.text}
+            dropdownIconColor={currentColors.text}
           >
             {items.map((item) => (
               <RNPicker.Item
@@ -66,6 +98,112 @@ export function Picker({
   }
 
   // iOS: Use modal picker
+  const styles = StyleSheet.create({
+    container: {
+      marginBottom: spacing.md,
+    },
+    label: {
+      ...typography.bodySmall,
+      color: currentColors.text,
+      marginBottom: spacing.sm,
+      fontWeight: '500',
+    },
+    pickerButton: {
+      height: spacing.touchTarget,
+      borderWidth: 1,
+      borderColor: currentColors.border,
+      borderRadius: 8,
+      backgroundColor: currentColors.surface,
+      paddingHorizontal: spacing.md,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    pickerButtonError: {
+      borderColor: currentColors.error,
+    },
+    pickerButtonText: {
+      ...typography.body,
+      color: currentColors.text,
+      flex: 1,
+    },
+    pickerButtonTextPlaceholder: {
+      color: currentColors.textTertiary,
+    },
+    pickerButtonArrow: {
+      ...typography.body,
+      color: currentColors.textSecondary,
+      marginLeft: spacing.sm,
+    },
+    errorText: {
+      ...typography.caption,
+      color: currentColors.error,
+      marginTop: spacing.xs,
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'flex-end',
+    },
+    modalContent: {
+      backgroundColor: currentColors.surface,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: '70%',
+    },
+    modalHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: currentColors.borderLight,
+    },
+    modalCancelButton: {
+      padding: spacing.sm,
+    },
+    modalCancelText: {
+      ...typography.body,
+      color: currentColors.primary,
+    },
+    modalTitle: {
+      ...typography.h4,
+      color: currentColors.text,
+    },
+    modalDoneButton: {
+      padding: spacing.sm,
+    },
+    modalDoneText: {
+      ...typography.body,
+      color: currentColors.primary,
+      fontWeight: '600',
+    },
+    modalItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: currentColors.borderLight,
+    },
+    modalItemSelected: {
+      backgroundColor: currentColors.primaryLight + '10',
+    },
+    modalItemText: {
+      ...typography.body,
+      color: currentColors.text,
+    },
+    modalItemTextSelected: {
+      color: currentColors.primary,
+      fontWeight: '600',
+    },
+    modalItemCheck: {
+      ...typography.body,
+      color: currentColors.primary,
+      fontWeight: 'bold',
+    },
+  });
+
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -142,123 +280,3 @@ export function Picker({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.md,
-  },
-  label: {
-    ...typography.bodySmall,
-    color: colors.text,
-    marginBottom: spacing.sm,
-    fontWeight: '500',
-  },
-  pickerWrapper: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    backgroundColor: colors.surface,
-    overflow: 'hidden',
-  },
-  pickerWrapperError: {
-    borderColor: colors.error,
-  },
-  picker: {
-    height: spacing.touchTarget,
-    color: colors.text,
-  },
-  pickerButton: {
-    height: spacing.touchTarget,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    backgroundColor: colors.surface,
-    paddingHorizontal: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  pickerButtonError: {
-    borderColor: colors.error,
-  },
-  pickerButtonText: {
-    ...typography.body,
-    color: colors.text,
-    flex: 1,
-  },
-  pickerButtonTextPlaceholder: {
-    color: colors.textTertiary,
-  },
-  pickerButtonArrow: {
-    ...typography.body,
-    color: colors.textSecondary,
-    marginLeft: spacing.sm,
-  },
-  errorText: {
-    ...typography.caption,
-    color: colors.error,
-    marginTop: spacing.xs,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '70%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  modalCancelButton: {
-    padding: spacing.sm,
-  },
-  modalCancelText: {
-    ...typography.body,
-    color: colors.primary,
-  },
-  modalTitle: {
-    ...typography.h4,
-    color: colors.text,
-  },
-  modalDoneButton: {
-    padding: spacing.sm,
-  },
-  modalDoneText: {
-    ...typography.body,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  modalItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  modalItemSelected: {
-    backgroundColor: colors.primaryLight + '10',
-  },
-  modalItemText: {
-    ...typography.body,
-    color: colors.text,
-  },
-  modalItemTextSelected: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  modalItemCheck: {
-    ...typography.body,
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
-});

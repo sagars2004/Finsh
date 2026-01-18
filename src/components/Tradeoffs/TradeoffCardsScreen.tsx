@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, Dimensi
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from 'react-native-paper';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { Footer } from '../shared/Footer';
 import { TradeoffCard } from './TradeoffCard';
 import { getPlaceholderTradeoffs } from '../../utils/placeholders';
 import { generateTradeoffs } from '../../services/replit/ai';
@@ -16,9 +17,10 @@ const SWIPE_THRESHOLD = 50;
 
 interface TradeoffCardsScreenProps {
   onBack: () => void;
+  navigation?: any;
 }
 
-export function TradeoffCardsScreen({ onBack }: TradeoffCardsScreenProps) {
+export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenProps) {
   const { userData } = useUser();
   const [cards, setCards] = useState<TradeoffCardType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -198,6 +200,9 @@ export function TradeoffCardsScreen({ onBack }: TradeoffCardsScreenProps) {
           Tradeoffs are based on your salary and expenses
         </Text>
       </View>
+      <SafeAreaView edges={['bottom']} style={styles.footerIconContainer}>
+        <Footer navigation={navigation} />
+      </SafeAreaView>
     </SafeAreaView>
   );
 }
@@ -288,5 +293,8 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textTertiary,
     fontStyle: 'italic',
+  },
+  footerIconContainer: {
+    backgroundColor: colors.surface,
   },
 });

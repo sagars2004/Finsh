@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
-import { colors } from '../../theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
@@ -11,7 +11,25 @@ interface ProgressIndicatorProps {
 }
 
 export function ProgressIndicator({ currentStep, totalSteps }: ProgressIndicatorProps) {
+  const { currentColors } = useTheme();
   const progress = currentStep / totalSteps;
+
+  const styles = StyleSheet.create({
+    container: {
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    text: {
+      ...typography.caption,
+      color: currentColors.textSecondary,
+      marginBottom: spacing.sm,
+    },
+    progressBar: {
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: currentColors.borderLight,
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -20,26 +38,9 @@ export function ProgressIndicator({ currentStep, totalSteps }: ProgressIndicator
       </Text>
       <ProgressBar
         progress={progress}
-        color={colors.primary}
+        color={currentColors.primary}
         style={styles.progressBar}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  text: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  progressBar: {
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.borderLight,
-  },
-});

@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from 'react-native-paper';
+import { Footer } from '../shared/Footer';
 import { ProgressIndicator } from './ProgressIndicator';
 import { useOnboarding } from '../../context/OnboardingContext';
-import { colors } from '../../theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
 interface ContextScreenProps {
   onNext: () => void;
   onBack: () => void;
+  navigation?: any;
 }
 
 const LIVING_OPTIONS = [
@@ -35,8 +37,9 @@ const GOAL_OPTIONS = [
   'Buy a Car',
 ];
 
-export function ContextScreen({ onNext, onBack }: ContextScreenProps) {
+export function ContextScreen({ onNext, onBack, navigation }: ContextScreenProps) {
   const { onboardingData, updateExpenses } = useOnboarding();
+  const { currentColors } = useTheme();
   const [livingSituation, setLivingSituation] = useState(
     onboardingData.expenses.livingSituation || null
   );
@@ -46,6 +49,17 @@ export function ContextScreen({ onNext, onBack }: ContextScreenProps) {
   const [selectedGoals, setSelectedGoals] = useState<string[]>(
     onboardingData.expenses.goals || []
   );
+
+  // Reset local state when onboarding context is cleared
+  useEffect(() => {
+    if (!onboardingData.expenses.livingSituation && 
+        !onboardingData.expenses.majorExpenses?.length && 
+        !onboardingData.expenses.goals?.length) {
+      setLivingSituation(null);
+      setSelectedExpenses([]);
+      setSelectedGoals([]);
+    }
+  }, [onboardingData.expenses]);
 
   const toggleExpense = (expense: string) => {
     setSelectedExpenses((prev) =>
@@ -70,6 +84,98 @@ export function ContextScreen({ onNext, onBack }: ContextScreenProps) {
 
     onNext();
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: currentColors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      padding: spacing.lg,
+    },
+    content: {
+      flex: 1,
+    },
+    title: {
+      ...typography.h2,
+      color: currentColors.text,
+      marginBottom: spacing.sm,
+    },
+    subtitle: {
+      ...typography.body,
+      color: currentColors.textSecondary,
+      marginBottom: spacing.xl,
+    },
+    section: {
+      marginBottom: spacing.xl,
+    },
+    sectionTitle: {
+      ...typography.h4,
+      color: currentColors.text,
+      marginBottom: spacing.md,
+    },
+    optionButton: {
+      padding: spacing.md,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: currentColors.border,
+      backgroundColor: currentColors.surface,
+      marginBottom: spacing.sm,
+    },
+    optionButtonSelected: {
+      borderColor: currentColors.primary,
+      backgroundColor: currentColors.tradeoffOptionA,
+    },
+    optionText: {
+      ...typography.body,
+      color: currentColors.text,
+    },
+    optionTextSelected: {
+      color: currentColors.primary,
+      fontWeight: '600',
+    },
+    chipButton: {
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: currentColors.border,
+      backgroundColor: currentColors.surface,
+      marginRight: spacing.sm,
+      marginBottom: spacing.sm,
+      alignSelf: 'flex-start',
+    },
+    chipButtonSelected: {
+      borderColor: currentColors.primary,
+      backgroundColor: currentColors.primaryLight + '20',
+    },
+    chipText: {
+      ...typography.bodySmall,
+      color: currentColors.text,
+    },
+    chipTextSelected: {
+      color: currentColors.primary,
+      fontWeight: '600',
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      gap: spacing.md,
+      paddingVertical: spacing.lg,
+    },
+    backButton: {
+      flex: 1,
+    },
+    button: {
+      flex: 1,
+    },
+    buttonContent: {
+      paddingVertical: spacing.sm,
+    },
+    footerContainer: {
+      backgroundColor: currentColors.surface,
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -109,48 +215,52 @@ export function ContextScreen({ onNext, onBack }: ContextScreenProps) {
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Major Expenses (optional)</Text>
-            {EXPENSE_OPTIONS.map((expense) => (
-              <TouchableOpacity
-                key={expense}
-                style={[
-                  styles.chipButton,
-                  selectedExpenses.includes(expense) && styles.chipButtonSelected,
-                ]}
-                onPress={() => toggleExpense(expense)}
-              >
-                <Text
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              {EXPENSE_OPTIONS.map((expense) => (
+                <TouchableOpacity
+                  key={expense}
                   style={[
-                    styles.chipText,
-                    selectedExpenses.includes(expense) && styles.chipTextSelected,
+                    styles.chipButton,
+                    selectedExpenses.includes(expense) && styles.chipButtonSelected,
                   ]}
+                  onPress={() => toggleExpense(expense)}
                 >
-                  {expense}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text
+                    style={[
+                      styles.chipText,
+                      selectedExpenses.includes(expense) && styles.chipTextSelected,
+                    ]}
+                  >
+                    {expense}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Financial Goals (optional)</Text>
-            {GOAL_OPTIONS.map((goal) => (
-              <TouchableOpacity
-                key={goal}
-                style={[
-                  styles.chipButton,
-                  selectedGoals.includes(goal) && styles.chipButtonSelected,
-                ]}
-                onPress={() => toggleGoal(goal)}
-              >
-                <Text
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              {GOAL_OPTIONS.map((goal) => (
+                <TouchableOpacity
+                  key={goal}
                   style={[
-                    styles.chipText,
-                    selectedGoals.includes(goal) && styles.chipTextSelected,
+                    styles.chipButton,
+                    selectedGoals.includes(goal) && styles.chipButtonSelected,
                   ]}
+                  onPress={() => toggleGoal(goal)}
                 >
-                  {goal}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text
+                    style={[
+                      styles.chipText,
+                      selectedGoals.includes(goal) && styles.chipTextSelected,
+                    ]}
+                  >
+                    {goal}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </View>
 
@@ -158,8 +268,8 @@ export function ContextScreen({ onNext, onBack }: ContextScreenProps) {
           <Button
             mode="outlined"
             onPress={onBack}
-            buttonColor={colors.surface}
-            textColor={colors.primary}
+            buttonColor={currentColors.surface}
+            textColor={currentColors.primary}
             style={[styles.backButton, styles.button]}
             contentStyle={styles.buttonContent}
           >
@@ -168,8 +278,8 @@ export function ContextScreen({ onNext, onBack }: ContextScreenProps) {
           <Button
             mode="contained"
             onPress={handleNext}
-            buttonColor={colors.primary}
-            textColor={colors.surface}
+            buttonColor={currentColors.primary}
+            textColor={currentColors.surface}
             disabled={!livingSituation}
             style={styles.button}
             contentStyle={styles.buttonContent}
@@ -178,95 +288,9 @@ export function ContextScreen({ onNext, onBack }: ContextScreenProps) {
           </Button>
         </View>
       </ScrollView>
+      <SafeAreaView edges={['bottom']} style={styles.footerContainer}>
+        <Footer navigation={navigation} />
+      </SafeAreaView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: spacing.lg,
-  },
-  content: {
-    flex: 1,
-  },
-  title: {
-    ...typography.h2,
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    marginBottom: spacing.xl,
-  },
-  section: {
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    ...typography.h4,
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  optionButton: {
-    padding: spacing.md,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    marginBottom: spacing.sm,
-  },
-  optionButtonSelected: {
-    borderColor: colors.primary,
-    backgroundColor: colors.tradeoffOptionA,
-  },
-  optionText: {
-    ...typography.body,
-    color: colors.text,
-  },
-  optionTextSelected: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  chipButton: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    marginRight: spacing.sm,
-    marginBottom: spacing.sm,
-    alignSelf: 'flex-start',
-  },
-  chipButtonSelected: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primaryLight + '20',
-  },
-  chipText: {
-    ...typography.bodySmall,
-    color: colors.text,
-  },
-  chipTextSelected: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    paddingVertical: spacing.lg,
-  },
-  backButton: {
-    flex: 1,
-  },
-  button: {
-    flex: 1,
-  },
-  buttonContent: {
-    paddingVertical: spacing.sm,
-  },
-});

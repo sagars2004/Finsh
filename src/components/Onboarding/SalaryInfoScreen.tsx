@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, TextInput } from 'react-native-paper';
 import { Picker } from '../shared/Picker';
+import { Footer } from '../shared/Footer';
 import { ProgressIndicator } from './ProgressIndicator';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { PayFrequency } from '../../types/user';
-import { colors } from '../../theme/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
 interface SalaryInfoScreenProps {
   onNext: () => void;
   onBack: () => void;
+  navigation?: any;
 }
 
 const US_STATES = [
@@ -28,22 +30,63 @@ const US_STATES = [
   'West Virginia', 'Wisconsin', 'Wyoming',
 ];
 
-export function SalaryInfoScreen({ onNext, onBack }: SalaryInfoScreenProps) {
+const INDUSTRIES = [
+  'Technology',
+  'Finance',
+  'Healthcare',
+  'Education',
+  'Consulting',
+  'Marketing',
+  'Retail',
+  'Manufacturing',
+  'Non-profit',
+  'Government',
+  'Other',
+];
+
+const EXPERIENCE_LEVELS = [
+  { label: 'Entry Level (0-1 years)', value: '0-1' },
+  { label: 'Early Career (2-3 years)', value: '2-3' },
+  { label: 'Mid-Level (4-6 years)', value: '4-6' },
+  { label: 'Senior (7+ years)', value: '7+' },
+];
+
+export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScreenProps) {
   const { onboardingData, updateSalary } = useOnboarding();
-  const [annualSalary, setAnnualSalary] = useState(
-    onboardingData.salary.annualSalary?.toString() || ''
+  const { currentColors } = useTheme();
+  const [hourlyRate, setHourlyRate] = useState(
+    onboardingData.salary.annualSalary ? (onboardingData.salary.annualSalary / 2080).toFixed(2) : ''
   );
+  const [hoursPerWeek, setHoursPerWeek] = useState('40');
   const [payFrequency, setPayFrequency] = useState<PayFrequency>(
     onboardingData.salary.payFrequency || 'monthly'
   );
   const [state, setState] = useState(onboardingData.salary.state || '');
+  const [city, setCity] = useState('');
+  const [industry, setIndustry] = useState('');
+  const [experienceLevel, setExperienceLevel] = useState('');
   const [error, setError] = useState('');
 
+  // Reset local state when onboarding context is cleared
+  useEffect(() => {
+    if (!onboardingData.salary.annualSalary && !onboardingData.salary.state) {
+      setHourlyRate('');
+      setHoursPerWeek('40');
+      setPayFrequency('monthly');
+      setState('');
+      setCity('');
+      setIndustry('');
+      setExperienceLevel('');
+      setError('');
+    }
+  }, [onboardingData.salary]);
+
   const handleNext = () => {
-    const salaryNum = parseFloat(annualSalary.replace(/[^0-9.]/g, ''));
+    const hourlyNum = parseFloat(hourlyRate.replace(/[^0-9.]/g, ''));
+    const hoursNum = parseFloat(hoursPerWeek.replace(/[^0-9.]/g, '')) || 40;
     
-    if (!annualSalary || isNaN(salaryNum) || salaryNum <= 0) {
-      setError('Please enter a valid annual salary');
+    if (!hourlyRate || isNaN(hourlyNum) || hourlyNum <= 0) {
+      setError('Please enter a valid hourly rate');
       return;
     }
 
@@ -52,14 +95,68 @@ export function SalaryInfoScreen({ onNext, onBack }: SalaryInfoScreenProps) {
       return;
     }
 
+    // Calculate annual salary from hourly rate
+    const annualSalary = hourlyNum * hoursNum * 52; // hourly rate * hours/week * 52 weeks
+
     updateSalary({
-      annualSalary: salaryNum,
+      annualSalary,
       payFrequency,
       state,
     });
 
     onNext();
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: currentColors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      padding: spacing.lg,
+    },
+    content: {
+      flex: 1,
+    },
+    title: {
+      ...typography.h2,
+      color: currentColors.text,
+      marginBottom: spacing.sm,
+    },
+    subtitle: {
+      ...typography.body,
+      color: currentColors.textSecondary,
+      marginBottom: spacing.xl,
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      gap: spacing.md,
+      paddingVertical: spacing.lg,
+    },
+    backButton: {
+      flex: 1,
+    },
+    button: {
+      flex: 1,
+    },
+    buttonContent: {
+      paddingVertical: spacing.sm,
+    },
+    input: {
+      marginBottom: spacing.md,
+    },
+    errorText: {
+      ...typography.caption,
+      color: currentColors.error,
+      marginTop: spacing.xs * -1,
+      marginBottom: spacing.md,
+      marginLeft: spacing.sm,
+    },
+    footerContainer: {
+      backgroundColor: currentColors.surface,
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -69,25 +166,81 @@ export function SalaryInfoScreen({ onNext, onBack }: SalaryInfoScreenProps) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
-          <Text style={styles.title}>Tell us about your salary</Text>
+          <Text style={styles.title}>Tell us about your work</Text>
           <Text style={styles.subtitle}>
             We'll use this to calculate your take-home pay and show you personalized insights.
           </Text>
 
           <TextInput
-            label="Annual Salary"
-            placeholder="$75,000"
+            label="Hourly Rate"
+            placeholder="$25.00"
             mode="outlined"
             keyboardType="numeric"
-            value={annualSalary}
+            value={hourlyRate}
             onChangeText={(text) => {
-              setAnnualSalary(text);
+              setHourlyRate(text);
               setError('');
             }}
-            error={!!error}
+            error={!!error && !hourlyRate}
             style={styles.input}
           />
-          {error && <Text style={styles.errorText}>{error}</Text>}
+
+          <TextInput
+            label="Hours Per Week (optional)"
+            placeholder="40"
+            mode="outlined"
+            keyboardType="numeric"
+            value={hoursPerWeek}
+            onChangeText={setHoursPerWeek}
+            style={styles.input}
+          />
+
+          <Picker
+            label="Industry"
+            selectedValue={industry}
+            onValueChange={setIndustry}
+            items={[
+              { label: 'Select your industry', value: '' },
+              ...INDUSTRIES.map((ind) => ({ label: ind, value: ind })),
+            ]}
+            placeholder="Select your industry"
+          />
+
+          <Picker
+            label="Years of Experience"
+            selectedValue={experienceLevel}
+            onValueChange={setExperienceLevel}
+            items={[
+              { label: 'Select experience level', value: '' },
+              ...EXPERIENCE_LEVELS.map((exp) => ({ label: exp.label, value: exp.value })),
+            ]}
+            placeholder="Select experience level"
+          />
+
+          <TextInput
+            label="City (optional)"
+            placeholder="San Francisco"
+            mode="outlined"
+            value={city}
+            onChangeText={setCity}
+            style={styles.input}
+            autoCapitalize="words"
+          />
+
+          <Picker
+            label="State"
+            selectedValue={state}
+            onValueChange={(value) => {
+              setState(value);
+              setError('');
+            }}
+            items={[
+              { label: 'Select your state', value: '' },
+              ...US_STATES.map((s) => ({ label: s, value: s })),
+            ]}
+            placeholder="Select your state"
+            error={error && !state ? error : undefined}
+          />
 
           <Picker
             label="Pay Frequency"
@@ -102,28 +255,15 @@ export function SalaryInfoScreen({ onNext, onBack }: SalaryInfoScreenProps) {
             placeholder="Select pay frequency"
           />
 
-          <Picker
-            label="State"
-            selectedValue={state}
-            onValueChange={(value) => {
-              setState(value);
-              setError('');
-            }}
-            items={[
-              { label: 'Select a state', value: '' },
-              ...US_STATES.map((s) => ({ label: s, value: s })),
-            ]}
-            placeholder="Select your state"
-            error={error && !state ? error : undefined}
-          />
+          {error && <Text style={styles.errorText}>{error}</Text>}
         </View>
 
         <View style={styles.buttonContainer}>
           <Button
             mode="outlined"
             onPress={onBack}
-            buttonColor={colors.surface}
-            textColor={colors.primary}
+            buttonColor={currentColors.surface}
+            textColor={currentColors.primary}
             style={[styles.backButton, styles.button]}
             contentStyle={styles.buttonContent}
           >
@@ -132,8 +272,8 @@ export function SalaryInfoScreen({ onNext, onBack }: SalaryInfoScreenProps) {
           <Button
             mode="contained"
             onPress={handleNext}
-            buttonColor={colors.primary}
-            textColor={colors.surface}
+            buttonColor={currentColors.primary}
+            textColor={currentColors.surface}
             style={styles.button}
             contentStyle={styles.buttonContent}
           >
@@ -141,54 +281,9 @@ export function SalaryInfoScreen({ onNext, onBack }: SalaryInfoScreenProps) {
           </Button>
         </View>
       </ScrollView>
+      <SafeAreaView edges={['bottom']} style={styles.footerContainer}>
+        <Footer navigation={navigation} />
+      </SafeAreaView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: spacing.lg,
-  },
-  content: {
-    flex: 1,
-  },
-  title: {
-    ...typography.h2,
-    color: colors.text,
-    marginBottom: spacing.sm,
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    marginBottom: spacing.xl,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    paddingVertical: spacing.lg,
-  },
-  backButton: {
-    flex: 1,
-  },
-  button: {
-    flex: 1,
-  },
-  buttonContent: {
-    paddingVertical: spacing.sm,
-  },
-  input: {
-    marginBottom: spacing.md,
-  },
-  errorText: {
-    ...typography.caption,
-    color: colors.error,
-    marginTop: spacing.xs * -1,
-    marginBottom: spacing.md,
-    marginLeft: spacing.sm,
-  },
-});
