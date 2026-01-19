@@ -102,8 +102,8 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
         />
         
         <ActionButtons
-          onViewTradeoffs={onViewTradeoffs}
           onViewBreakdown={onViewBreakdown}
+          onViewTradeoffs={onViewTradeoffs}
         />
         <View style={styles.infoBox}>
           <View style={styles.infoBoxContent}>

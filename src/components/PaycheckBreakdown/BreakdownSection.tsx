@@ -10,7 +10,7 @@ interface BreakdownSectionProps {
   label: string;
   amount: number;
   description?: string;
-  variant?: 'default' | 'primary' | 'emphasis';
+  variant?: 'default' | 'primary' | 'emphasis' | 'takeHome' | 'grossPay' | 'totalTaxes' | 'totalBenefits';
 }
 
 export function BreakdownSection({
@@ -19,7 +19,7 @@ export function BreakdownSection({
   description,
   variant = 'default',
 }: BreakdownSectionProps) {
-  const { currentColors } = useTheme();
+  const { currentColors, isDark } = useTheme();
 
   const getVariantStyles = (): { container?: ViewStyle; amount?: TextStyle } => {
     switch (variant) {
@@ -42,6 +42,45 @@ export function BreakdownSection({
           amount: {
             ...typography.h3,
             color: currentColors.text,
+          },
+        };
+      case 'takeHome':
+        return {
+          container: {
+            backgroundColor: currentColors.surfaceSecondary,
+            borderWidth: 3,
+            borderColor: isDark ? '#FFFFFF' : '#000000',
+          },
+          amount: {
+            ...typography.h3,
+            color: '#4CAF50', // Green
+          },
+        };
+      case 'grossPay':
+        return {
+          amount: {
+            ...typography.h4,
+            color: currentColors.primary, // Blue
+          },
+        };
+      case 'totalTaxes':
+        return {
+          container: {
+            backgroundColor: currentColors.surfaceSecondary,
+          },
+          amount: {
+            ...typography.h3,
+            color: currentColors.error, // Red
+          },
+        };
+      case 'totalBenefits':
+        return {
+          container: {
+            backgroundColor: currentColors.surfaceSecondary,
+          },
+          amount: {
+            ...typography.h3,
+            color: currentColors.error, // Red
           },
         };
       default:

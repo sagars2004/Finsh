@@ -2,8 +2,19 @@ import { SalaryInput, PayFrequency } from '../../types/user';
 import { PaycheckBreakdown } from '../../types/paycheck';
 
 /**
- * State-specific income tax rates (approximate, for new graduate salary ranges)
- * These are simplified flat rates for illustration - real calculations would use brackets
+ * State-specific income tax rates
+ * 
+ * These are simplified flat rates for most states. In reality:
+ * - Some states use progressive brackets (like federal tax)
+ * - Some states use flat rates (as shown here)
+ * - Some states have no income tax (0%)
+ * 
+ * Note: These rates are approximate and may vary based on:
+ * - Filing status (single, married, etc.)
+ * - Local taxes (some cities/counties add additional taxes)
+ * - Deductions and exemptions
+ * 
+ * For accurate calculations, consult your state's tax authority.
  */
 const STATE_TAX_RATES: Record<string, number> = {
   // No state income tax
@@ -67,26 +78,60 @@ const STATE_TAX_RATES: Record<string, number> = {
 };
 
 /**
- * Calculate federal tax based on 2024 tax brackets (simplified)
- * For new graduates (typically $50k-$100k range), effective rate is usually 12-22%
+ * Calculate federal tax based on 2024 tax brackets (true progressive calculation)
+ * 
+ * 2024 Federal Tax Brackets (Single Filer):
+ * - 10% on income up to $11,600
+ * - 12% on income from $11,601 to $47,150
+ * - 22% on income from $47,151 to $100,525
+ * - 24% on income from $100,526 to $191,950
+ * - 32% on income from $191,951 to $243,725
+ * - 35% on income from $243,726 to $609,350
+ * - 37% on income above $609,350
+ * 
+ * This function calculates the true progressive tax by applying each bracket rate
+ * only to the portion of income within that bracket, then prorates it to the paycheck.
  */
 function calculateFederalTax(grossPay: number, annualSalary: number): number {
-  // Simplified progressive tax calculation
-  // 2024 brackets: 10% up to $11,600, 12% up to $47,150, 22% up to $100,525
-  if (annualSalary <= 11600) {
-    return grossPay * 0.10;
-  } else if (annualSalary <= 47150) {
-    return grossPay * 0.12;
-  } else if (annualSalary <= 100525) {
-    return grossPay * 0.22;
-  } else {
-    // For higher earners, estimate 24%
-    return grossPay * 0.24;
+  // 2024 Federal Tax Brackets (Single Filer)
+  const brackets = [
+    { min: 0, max: 11600, rate: 0.10 },
+    { min: 11600, max: 47150, rate: 0.12 },
+    { min: 47150, max: 100525, rate: 0.22 },
+    { min: 100525, max: 191950, rate: 0.24 },
+    { min: 191950, max: 243725, rate: 0.32 },
+    { min: 243725, max: 609350, rate: 0.35 },
+    { min: 609350, max: Infinity, rate: 0.37 },
+  ];
+
+  let totalTax = 0;
+  
+  // Calculate tax for each bracket
+  for (const bracket of brackets) {
+    if (annualSalary > bracket.min) {
+      // Calculate taxable amount in this bracket
+      const taxableInBracket = Math.min(annualSalary, bracket.max) - bracket.min;
+      // Apply bracket rate
+      const taxInBracket = taxableInBracket * bracket.rate;
+      totalTax += taxInBracket;
+    }
   }
+
+  // Prorate annual tax to this paycheck
+  // Calculate what percentage this paycheck represents of annual salary
+  const paycheckRatio = grossPay / annualSalary;
+  return totalTax * paycheckRatio;
 }
 
 /**
  * Calculate state tax based on state
+ * 
+ * Uses state-specific flat rates from STATE_TAX_RATES.
+ * Most states use progressive brackets, but for simplicity we use effective flat rates.
+ * 
+ * @param grossPay - Gross pay for this paycheck
+ * @param state - State name
+ * @returns State tax amount for this paycheck
  */
 function calculateStateTax(grossPay: number, state: string): number {
   const rate = STATE_TAX_RATES[state] ?? 0.05; // Default to 5% if state not found
@@ -113,7 +158,25 @@ function calculateGrossPay(salary: number, frequency: PayFrequency): number {
 
 /**
  * Enhanced tax calculation with state-specific rates
- * Uses 2024 tax brackets and state tax rates for more accurate estimates
+ * 
+ * Calculates take-home pay by:
+ * 1. Computing gross pay per paycheck based on pay frequency
+ * 2. Calculating federal tax using 2024 progressive brackets
+ * 3. Calculating state tax using state-specific rates
+ * 4. Calculating FICA (Social Security + Medicare) at 7.65%
+ * 5. Estimating benefits (health insurance ~5%, retirement ~3%)
+ * 6. Subtracting all deductions from gross pay
+ * 
+ * Note: These are estimates. Actual take-home pay may vary based on:
+ * - Filing status (single, married, head of household)
+ * - Number of dependents/allowances
+ * - Additional deductions (HSA, FSA, etc.)
+ * - Employer-specific benefit costs
+ * - Local taxes (city/county)
+ * - Pre-tax vs post-tax deductions
+ * 
+ * @param salaryInput - User's salary information (annual salary, pay frequency, state)
+ * @returns Detailed paycheck breakdown with all deductions
  */
 export function estimateTakeHome(salaryInput: SalaryInput): PaycheckBreakdown {
   const grossPay = calculateGrossPay(salaryInput.annualSalary, salaryInput.payFrequency);
@@ -124,8 +187,20 @@ export function estimateTakeHome(salaryInput: SalaryInput): PaycheckBreakdown {
   // Calculate state tax using state-specific rates
   const stateTax = calculateStateTax(grossPay, salaryInput.state);
   
-  // FICA (Social Security + Medicare) - fixed at 7.65% of gross (up to Social Security wage base)
-  // For 2024: Social Security 6.2% on first $168,600, Medicare 1.45% on all income
+  // FICA (Social Security + Medicare) - Federal Insurance Contributions Act
+  // 
+  // Social Security Tax:
+  // - Rate: 6.2% of gross pay
+  // - Wage base limit (2024): $168,600
+  // - Only applies to income up to the wage base
+  // - If annual salary exceeds $168,600, no Social Security tax on excess
+  //
+  // Medicare Tax:
+  // - Rate: 1.45% of gross pay
+  // - No wage base limit (applies to all income)
+  // - Additional 0.9% Medicare surtax applies to income above $200,000 (single) - not included here
+  //
+  // Total FICA: 7.65% for most workers (6.2% + 1.45%)
   const socialSecurityRate = salaryInput.annualSalary <= 168600 ? 0.062 : 0;
   const medicareRate = 0.0145;
   const fica = grossPay * (socialSecurityRate + medicareRate);
@@ -133,9 +208,19 @@ export function estimateTakeHome(salaryInput: SalaryInput): PaycheckBreakdown {
   const totalTaxes = federalTax + stateTax + fica;
   
   // Benefits (health insurance, retirement)
-  // Estimates based on typical new graduate benefit costs
+  // 
+  // Health Insurance:
+  // - Estimated at 5% of gross pay
+  // - Actual costs vary widely by employer, plan type, and coverage level
+  // - Typically ranges from 2-8% of gross pay
+  //
+  // Retirement (401k):
+  // - Estimated at 3% of gross pay
+  // - Represents typical employee contribution to 401k
+  // - Many employers offer matching (e.g., match 50% up to 6% of salary)
+  // - Actual contribution varies by individual choice
   const healthInsurance = grossPay * 0.05; // ~5% of gross pay
-  const retirement = grossPay * 0.03; // ~3% for 401k (typical employer match starter)
+  const retirement = grossPay * 0.03; // ~3% for 401k (typical employee contribution)
   
   const totalBenefits = healthInsurance + retirement;
   

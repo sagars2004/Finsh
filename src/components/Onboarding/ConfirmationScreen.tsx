@@ -182,8 +182,10 @@ export function ConfirmationScreen({ onComplete, onBack, navigation }: Confirmat
                 <Text style={styles.summaryLabel}>Living Situation:</Text>
                 <Text style={styles.summaryValue}>
                   {onboardingData.expenses.livingSituation
-                    ? onboardingData.expenses.livingSituation.charAt(0).toUpperCase() +
-                      onboardingData.expenses.livingSituation.slice(1)
+                    ? onboardingData.expenses.livingSituation.toLowerCase() === 'alone'
+                      ? 'Single'
+                      : onboardingData.expenses.livingSituation.charAt(0).toUpperCase() +
+                        onboardingData.expenses.livingSituation.slice(1)
                     : 'Not set'}
                 </Text>
               </View>

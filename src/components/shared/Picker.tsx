@@ -25,6 +25,7 @@ interface PickerProps {
   items: PickerItem[];
   placeholder?: string;
   error?: string;
+  isValid?: boolean;
 }
 
 export function Picker({
@@ -34,6 +35,7 @@ export function Picker({
   items,
   placeholder = 'Select an option',
   error,
+  isValid = false,
 }: PickerProps) {
   const { currentColors } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
@@ -54,7 +56,7 @@ export function Picker({
       },
       pickerWrapper: {
         borderWidth: 1,
-        borderColor: currentColors.border,
+        borderColor: isValid ? '#4CAF50' : currentColors.border,
         borderRadius: 8,
         backgroundColor: currentColors.surface,
         overflow: 'hidden',
@@ -84,7 +86,7 @@ export function Picker({
     return (
       <View style={styles.container}>
         {label && <Text style={styles.label}>{label}</Text>}
-        <View style={[styles.pickerWrapper, error && styles.pickerWrapperError]}>
+        <View style={[styles.pickerWrapper, error && styles.pickerWrapperError, isValid && !error && { borderColor: '#4CAF50' }]}>
           <RNPicker
             selectedValue={selectedValue}
             onValueChange={onValueChange}
@@ -119,7 +121,7 @@ export function Picker({
     pickerButton: {
       height: spacing.touchTarget,
       borderWidth: 1,
-      borderColor: currentColors.border,
+      borderColor: isValid ? '#4CAF50' : currentColors.border,
       borderRadius: 8,
       backgroundColor: currentColors.surface,
       paddingHorizontal: spacing.md,
@@ -224,7 +226,7 @@ export function Picker({
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
       <TouchableOpacity
-        style={[styles.pickerButton, error && styles.pickerButtonError]}
+        style={[styles.pickerButton, error && styles.pickerButtonError, isValid && !error && { borderColor: '#4CAF50' }]}
         onPress={() => setModalVisible(true)}
       >
         <Text

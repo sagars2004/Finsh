@@ -474,7 +474,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
                   size={32}
                   color={isDark ? '#FFFFFF' : '#000000'}
                 />
-                <Text style={styles.featureText}>Smart Tradeoffs</Text>
+                <Text style={styles.featureText}>Smart Trade-offs</Text>
               </View>
               <View style={styles.feature}>
                 <MaterialCommunityIcons
@@ -487,7 +487,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
             </View>
             
             <Text style={styles.description}>
-              Let's curate your personal Finsh tank and bring clarity to every financial current!
+              Let's curate your personal Finsh tank and make decisions flow effortlessly!
             </Text>
           </Animated.View>
         </View>

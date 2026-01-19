@@ -210,6 +210,31 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
     }
   };
 
+  // Validation functions
+  const isValidPayFrequency = () => {
+    if (!payFrequency) return false;
+    if (payFrequency === 'other') {
+      const periods = parseFloat(customPayPeriods);
+      return customPayPeriods && !isNaN(periods) && periods >= 1;
+    }
+    return true;
+  };
+
+  const isValidPayAmount = () => {
+    const payAmountNum = parseFloat(payAmount.replace(/[^0-9.]/g, ''));
+    return payAmount && !isNaN(payAmountNum) && payAmountNum >= 0.01;
+  };
+
+  const isValidState = () => {
+    return !!state;
+  };
+
+  const isValidCustomPeriods = () => {
+    if (payFrequency !== 'other') return true;
+    const periods = parseFloat(customPayPeriods);
+    return customPayPeriods && !isNaN(periods) && periods >= 1 && periods >= 0;
+  };
+
   const handleNext = () => {
     // Reset all error messages
     setError('');
@@ -221,8 +246,11 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
     const payAmountNum = parseFloat(payAmount.replace(/[^0-9.]/g, ''));
     
     // Validate paycheck amount
-    if (!payAmount || isNaN(payAmountNum) || payAmountNum <= 0) {
-      setPayAmountError('Please enter a valid paycheck amount');
+    if (!payAmount || isNaN(payAmountNum) || payAmountNum < 0) {
+      setPayAmountError('Paycheck amount cannot be negative');
+      hasErrors = true;
+    } else if (payAmountNum < 0.01) {
+      setPayAmountError('Please enter a valid amount (min. $0.01)');
       hasErrors = true;
     }
 
@@ -239,8 +267,11 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
     } else if (payFrequency === 'other') {
       // Validate custom pay periods
       const periods = parseFloat(customPayPeriods);
-      if (!customPayPeriods || isNaN(periods) || periods <= 0) {
-        setPayFrequencyError('Please enter the number of pay periods per year');
+      if (!customPayPeriods || isNaN(periods) || periods < 0) {
+        setPayFrequencyError('Pay periods cannot be negative');
+        hasErrors = true;
+      } else if (periods < 1) {
+        setPayFrequencyError('Pay periods must be at least 1');
         hasErrors = true;
       }
     }
@@ -354,6 +385,10 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
     footerContainer: {
       backgroundColor: currentColors.surface,
     },
+    pickerContainer: {
+      position: 'relative',
+      marginBottom: spacing.md,
+    },
   });
 
   return (
@@ -369,24 +404,26 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
             We'll use this to calculate your take-home pay and show you personalized insights.
           </Text>
 
-          <Picker
-            label="Pay Frequency"
-            selectedValue={payFrequency}
-            onValueChange={(value) => {
-              setPayFrequency(value as PayFrequency | 'other' | '');
-              setPayFrequencyError('');
-            }}
-            items={[
-              { label: 'Select how often you\'re paid', value: '' },
-              { label: 'Monthly', value: 'monthly' },
-              { label: 'Semi-Monthly', value: 'semimonthly' },
-              { label: 'Bi-Weekly', value: 'biweekly' },
-              { label: 'Weekly', value: 'weekly' },
-              { label: 'Other', value: 'other' },
-            ]}
-            placeholder="Select how often you're paid"
-            error={payFrequencyError ? payFrequencyError : undefined}
-          />
+          <View style={styles.pickerContainer}>
+            <Picker
+              label="Pay Frequency"
+              selectedValue={payFrequency}
+              onValueChange={(value) => {
+                setPayFrequency(value as PayFrequency | 'other' | '');
+                setPayFrequencyError('');
+              }}
+              items={[
+                { label: 'Select how often you\'re paid', value: '' },
+                { label: 'Monthly', value: 'monthly' },
+                { label: 'Bi-Weekly', value: 'biweekly' },
+                { label: 'Weekly', value: 'weekly' },
+                { label: 'Other', value: 'other' },
+              ]}
+              placeholder="Select how often you're paid"
+              error={payFrequencyError ? payFrequencyError : undefined}
+              isValid={!!isValidPayFrequency()}
+            />
+          </View>
           
           {payFrequency === 'other' && (
             <>
@@ -397,30 +434,57 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
                 keyboardType="numeric"
                 value={customPayPeriods}
                 onChangeText={(text) => {
-                  setCustomPayPeriods(text);
-                  setPayFrequencyError('');
+                  // Prevent negative sign
+                  const filteredText = text.replace(/[^0-9.]/g, '');
+                  setCustomPayPeriods(filteredText);
+                  const periods = parseFloat(filteredText);
+                  if (filteredText && (!isNaN(periods) && periods >= 1)) {
+                    setPayFrequencyError('');
+                  } else if (filteredText && (isNaN(periods) || periods < 1)) {
+                    setPayFrequencyError('Pay periods must be at least 1');
+                  } else {
+                    setPayFrequencyError('');
+                  }
                 }}
                 error={!!payFrequencyError && payFrequency === 'other'}
                 style={styles.input}
+                outlineColor={isValidCustomPeriods() ? '#4CAF50' : (payFrequencyError && payFrequency === 'other' ? currentColors.error : undefined)}
+                activeOutlineColor={isValidCustomPeriods() ? '#4CAF50' : (payFrequencyError && payFrequency === 'other' ? currentColors.error : undefined)}
               />
-              <Text style={[styles.errorText, { color: currentColors.textSecondary, marginTop: -spacing.sm }]}>
-                Enter the number of times you get paid per year
-              </Text>
+              {payFrequencyError && payFrequency === 'other' && (
+                <Text style={styles.errorText}>{payFrequencyError}</Text>
+              )}
+              {!payFrequencyError && (
+                <Text style={[styles.errorText, { color: currentColors.textSecondary, marginTop: -spacing.sm }]}>
+                  Enter the number of times you get paid per year
+                </Text>
+              )}
             </>
           )}
 
           <TextInput
-            label={`Paycheck Amount${payFrequency === 'weekly' ? ' (per week)' : payFrequency === 'biweekly' ? ' (every 2 weeks)' : payFrequency === 'semimonthly' ? ' (twice per month)' : payFrequency === 'monthly' ? ' (per month)' : payFrequency === 'other' ? (customPayPeriods ? ` (${customPayPeriods} times per year)` : '') : ''}`}
+            label={`Paycheck Amount${payFrequency === 'weekly' ? ' (per week)' : payFrequency === 'biweekly' ? ' (every 2 weeks)' : payFrequency === 'monthly' ? ' (per month)' : payFrequency === 'other' ? (customPayPeriods ? ` (${customPayPeriods} times per year)` : '') : ''}`}
             placeholder="Enter a value in USD"
             mode="outlined"
             keyboardType="numeric"
             value={payAmount}
             onChangeText={(text) => {
-              setPayAmount(text);
-              setPayAmountError('');
+              // Prevent negative sign
+              const filteredText = text.replace(/[^0-9.]/g, '');
+              setPayAmount(filteredText);
+              const payAmountNum = parseFloat(filteredText);
+              if (filteredText && (!isNaN(payAmountNum) && payAmountNum >= 0.01)) {
+                setPayAmountError('');
+              } else if (filteredText && (isNaN(payAmountNum) || payAmountNum < 0.01)) {
+                setPayAmountError('Please enter a valid amount (min. $0.01)');
+              } else {
+                setPayAmountError('');
+              }
             }}
             error={!!payAmountError}
             style={styles.input}
+            outlineColor={isValidPayAmount() ? '#4CAF50' : (payAmountError ? currentColors.error : undefined)}
+            activeOutlineColor={isValidPayAmount() ? '#4CAF50' : (payAmountError ? currentColors.error : undefined)}
             left={<TextInput.Affix text="$" />}
           />
           {payAmountError && <Text style={styles.errorText}>{payAmountError}</Text>}
@@ -436,20 +500,23 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
                 style={[styles.input, styles.locationInput]}
                 autoCapitalize="words"
               />
-              <Picker
-                label="State"
-                selectedValue={state}
-                onValueChange={(value) => {
-                  setState(value);
-                  setStateError('');
-                }}
-                items={[
-                  { label: 'Select your state', value: '' },
-                  ...US_STATES.map((s) => ({ label: s, value: s })),
-                ]}
-                placeholder="Select your state"
-                error={stateError ? stateError : undefined}
-              />
+              <View style={styles.pickerContainer}>
+                <Picker
+                  label="State"
+                  selectedValue={state}
+                  onValueChange={(value) => {
+                    setState(value);
+                    setStateError('');
+                  }}
+                  items={[
+                    { label: 'Select your state', value: '' },
+                    ...US_STATES.map((s) => ({ label: s, value: s })),
+                  ]}
+                  placeholder="Select your state"
+                  error={stateError ? stateError : undefined}
+                  isValid={isValidState()}
+                />
+              </View>
             </View>
             <TouchableOpacity
               style={styles.locateButton}

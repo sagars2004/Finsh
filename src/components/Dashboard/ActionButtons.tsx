@@ -52,18 +52,6 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
     <View style={styles.container}>
       <Button
         mode="contained"
-        onPress={onViewTradeoffs}
-        buttonColor={isDark ? '#E5E5E5' : '#000000'}
-        textColor={isDark ? '#000000' : '#FFFFFF'}
-        style={styles.button}
-        contentStyle={styles.buttonContent}
-        labelStyle={styles.buttonLabel}
-        icon={({ color }) => <TradeoffIcon color={color} />}
-      >
-        View Tradeoff Cards
-      </Button>
-      <Button
-        mode="contained"
         onPress={onViewBreakdown}
         buttonColor={isDark ? '#E5E5E5' : '#000000'}
         textColor={isDark ? '#000000' : '#FFFFFF'}
@@ -73,6 +61,18 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
         icon={({ color }) => <BreakdownIcon color={color} />}
       >
         View Paycheck Breakdown
+      </Button>
+      <Button
+        mode="contained"
+        onPress={onViewTradeoffs}
+        buttonColor={isDark ? '#E5E5E5' : '#000000'}
+        textColor={isDark ? '#000000' : '#FFFFFF'}
+        style={styles.button}
+        contentStyle={styles.buttonContent}
+        labelStyle={styles.buttonLabel}
+        icon={({ color }) => <TradeoffIcon color={color} />}
+      >
+        View Tradeoff Cards
       </Button>
     </View>
   );

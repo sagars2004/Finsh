@@ -14,7 +14,7 @@ interface TakeHomeEstimateProps {
 
 export function TakeHomeEstimate({ breakdown, payFrequency }: TakeHomeEstimateProps) {
   const { takeHomePay, grossPay } = breakdown;
-  const { currentColors } = useTheme();
+  const { currentColors, isDark } = useTheme();
 
   const styles = StyleSheet.create({
     card: {
@@ -48,13 +48,13 @@ export function TakeHomeEstimate({ breakdown, payFrequency }: TakeHomeEstimatePr
     grossPayValue: {
       ...typography.bodySmall,
       color: currentColors.textSecondary,
-      fontWeight: '600',
+      fontWeight: '700',
     },
     amount: {
       ...typography.h1,
       color: currentColors.primary,
       marginBottom: spacing.xs,
-      fontWeight: '700',
+      fontWeight: '900',
     },
     frequency: {
       ...typography.body,

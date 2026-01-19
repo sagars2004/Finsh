@@ -123,7 +123,7 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Paycheck Breakdown</Text>
+        <Text style={styles.title}>Full Breakdown</Text>
         <View style={styles.placeholder} />
       </View>
       <ScrollView
@@ -146,7 +146,7 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
           label="Gross Pay"
           amount={breakdown.grossPay}
           description="Your total pay before deductions"
-          variant="default"
+          variant="grossPay"
         />
 
         <View style={styles.taxSection}>
@@ -154,22 +154,22 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
           <BreakdownSection
             label="Federal Tax"
             amount={breakdown.taxes.federal}
-            description="Income tax to the federal government"
+            description={`Progressive brackets: 10% up to $11,600, 12% up to $47,150, 22% up to $100,525, 24% up to $191,950`}
           />
           <BreakdownSection
             label="State Tax"
             amount={breakdown.taxes.state}
-            description="Income tax to your state"
+            description={userData?.salary?.state ? `State-specific rate for ${userData.salary.state}` : "State-specific income tax rate"}
           />
           <BreakdownSection
             label="FICA (Social Security & Medicare)"
             amount={breakdown.taxes.fica}
-            description="Social Security and Medicare contributions"
+            description="Social Security 6.2% (up to $168,600) + Medicare 1.45% = 7.65% total"
           />
           <BreakdownSection
             label="Total Taxes"
             amount={breakdown.taxes.total}
-            variant="emphasis"
+            variant="totalTaxes"
           />
         </View>
 
@@ -188,7 +188,7 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
           <BreakdownSection
             label="Total Benefits"
             amount={breakdown.benefits.total}
-            variant="emphasis"
+            variant="totalBenefits"
           />
         </View>
 
@@ -196,14 +196,13 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
           label="Take-Home Pay"
           amount={breakdown.takeHomePay}
           description="What you'll actually receive"
-          variant="primary"
+          variant="takeHome"
         />
 
         <Card style={styles.noteContainer}>
           <Card.Content>
             <Text style={styles.noteText}>
-              Note: These are estimates based on standard deductions. Your actual paycheck
-              may vary based on your specific benefit elections and tax situation.
+              Note: These are all estimates based on standard rates, your exact take-home may vary.
             </Text>
           </Card.Content>
         </Card>
