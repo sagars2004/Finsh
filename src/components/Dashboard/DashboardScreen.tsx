@@ -108,7 +108,7 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
         <View style={styles.infoBox}>
           <View style={styles.infoBoxContent}>
             <Text style={styles.infoText}>
-              To view more insights and plan your long-term future, select the Plan tab from the navigation below.
+              Don't forget! Select the Plan tab below to view more insights and plan your long-term future.
             </Text>
           </View>
         </View>
