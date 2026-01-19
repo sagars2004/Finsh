@@ -6,6 +6,7 @@ import * as Location from 'expo-location';
 import { Picker } from '../shared/Picker';
 import { Footer } from '../shared/Footer';
 import { ProgressIndicator } from './ProgressIndicator';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { PayFrequency } from '../../types/user';
 import { useTheme } from '../../context/ThemeContext';
@@ -54,7 +55,7 @@ const EXPERIENCE_LEVELS = [
 
 export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScreenProps) {
   const { onboardingData, updateSalary } = useOnboarding();
-  const { currentColors } = useTheme();
+  const { currentColors, isDark } = useTheme();
   const [payFrequency, setPayFrequency] = useState<PayFrequency>(
     onboardingData.salary.payFrequency || 'monthly'
   );
@@ -289,20 +290,27 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
       justifyContent: 'center',
       paddingVertical: spacing.md,
       paddingHorizontal: spacing.lg,
-      borderRadius: 8,
+      borderRadius: 12,
       backgroundColor: currentColors.surface,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: currentColors.border,
-      borderStyle: 'dashed',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 1,
     },
     locateButtonIcon: {
-      fontSize: 18,
       marginRight: spacing.sm,
     },
     locateButtonText: {
       ...typography.body,
-      color: currentColors.primary,
-      fontWeight: '500',
+      color: currentColors.text,
+      fontWeight: '600',
+      fontSize: 15,
     },
     footerContainer: {
       backgroundColor: currentColors.surface,
@@ -387,12 +395,17 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
               activeOpacity={0.7}
             >
               {isLocating ? (
-                <ActivityIndicator size="small" color={currentColors.primary} />
+                <ActivityIndicator size="small" color={currentColors.text} />
               ) : (
-                <Text style={styles.locateButtonIcon}>📍</Text>
+                <MaterialCommunityIcons
+                  name="map-marker-outline"
+                  size={20}
+                  color={currentColors.text}
+                  style={styles.locateButtonIcon}
+                />
               )}
               <Text style={styles.locateButtonText}>
-                {isLocating ? 'Locating...' : 'Locate Me'}
+                {isLocating ? 'Locating...' : 'Use My Location'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -405,7 +418,7 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
             mode="outlined"
             onPress={onBack}
             buttonColor={currentColors.surface}
-            textColor={currentColors.primary}
+            textColor={currentColors.text}
             style={[styles.backButton, styles.button]}
             contentStyle={styles.buttonContent}
           >
@@ -414,8 +427,8 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
           <Button
             mode="contained"
             onPress={handleNext}
-            buttonColor={currentColors.primary}
-            textColor={currentColors.surface}
+            buttonColor={isDark ? '#E5E5E5' : '#000000'}
+            textColor={isDark ? '#000000' : '#FFFFFF'}
             style={styles.button}
             contentStyle={styles.buttonContent}
           >

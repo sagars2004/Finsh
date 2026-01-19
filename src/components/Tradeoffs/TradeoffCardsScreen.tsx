@@ -117,7 +117,8 @@ export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenP
     },
     backButtonText: {
       ...typography.body,
-      color: currentColors.primary,
+      color: currentColors.text,
+      fontWeight: '700',
     },
     counter: {
       ...typography.bodySmall,
@@ -270,7 +271,7 @@ export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenP
           onPress={handlePrevious}
           disabled={currentIndex === 0}
           buttonColor={currentColors.surface}
-          textColor={currentIndex === 0 ? currentColors.textTertiary : currentColors.primary}
+          textColor={currentIndex === 0 ? currentColors.textTertiary : currentColors.text}
           style={styles.navButton}
           contentStyle={styles.navButtonContent}
         >

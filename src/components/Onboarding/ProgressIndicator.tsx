@@ -38,7 +38,7 @@ export function ProgressIndicator({ currentStep, totalSteps }: ProgressIndicator
       </Text>
       <ProgressBar
         progress={progress}
-        color={currentColors.primary}
+        color={currentColors.text}
         style={styles.progressBar}
       />
     </View>

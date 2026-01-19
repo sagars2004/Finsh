@@ -42,7 +42,8 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
     },
     backButtonText: {
       ...typography.body,
-      color: currentColors.primary,
+      color: currentColors.text,
+      fontWeight: '700',
     },
     title: {
       ...typography.h3,

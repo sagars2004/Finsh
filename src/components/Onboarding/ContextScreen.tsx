@@ -39,7 +39,7 @@ const GOAL_OPTIONS = [
 
 export function ContextScreen({ onNext, onBack, navigation }: ContextScreenProps) {
   const { onboardingData, updateExpenses } = useOnboarding();
-  const { currentColors } = useTheme();
+  const { currentColors, isDark } = useTheme();
   const [livingSituation, setLivingSituation] = useState(
     onboardingData.expenses.livingSituation || null
   );
@@ -269,7 +269,7 @@ export function ContextScreen({ onNext, onBack, navigation }: ContextScreenProps
             mode="outlined"
             onPress={onBack}
             buttonColor={currentColors.surface}
-            textColor={currentColors.primary}
+            textColor={currentColors.text}
             style={[styles.backButton, styles.button]}
             contentStyle={styles.buttonContent}
           >
@@ -278,8 +278,8 @@ export function ContextScreen({ onNext, onBack, navigation }: ContextScreenProps
           <Button
             mode="contained"
             onPress={handleNext}
-            buttonColor={currentColors.primary}
-            textColor={currentColors.surface}
+            buttonColor={isDark ? '#E5E5E5' : '#000000'}
+            textColor={isDark ? '#000000' : '#FFFFFF'}
             disabled={!livingSituation}
             style={styles.button}
             contentStyle={styles.buttonContent}

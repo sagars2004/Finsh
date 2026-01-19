@@ -16,7 +16,7 @@ interface SettingsScreenProps {
 
 export function SettingsScreen({ onBack, onNavigateToHome, navigation }: SettingsScreenProps) {
   const { userData, clearUserData } = useUser();
-  const { themeMode, setThemeMode, currentColors } = useTheme();
+  const { themeMode, setThemeMode, currentColors, isDark } = useTheme();
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const [biometricEnabled, setBiometricEnabled] = React.useState(false);
 
@@ -59,6 +59,22 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
     );
   };
 
+  const handleTermsAndConditions = () => {
+    Alert.alert(
+      'Terms & Conditions',
+      'Terms & Conditions content will be displayed here. This feature will be available soon.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handlePrivacyPolicy = () => {
+    Alert.alert(
+      'Privacy Policy',
+      'Privacy Policy content will be displayed here. This feature will be available soon.',
+      [{ text: 'OK' }]
+    );
+  };
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -78,7 +94,8 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
     },
     backButtonText: {
       ...typography.body,
-      color: currentColors.primary,
+      color: currentColors.text,
+      fontWeight: '700',
     },
     title: {
       ...typography.h3,
@@ -144,7 +161,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
     checkmark: {
       ...typography.h4,
       fontSize: 20,
-      fontWeight: 'bold',
+      fontWeight: '700',
     },
     accountInfo: {
       marginTop: spacing.sm,
@@ -226,7 +243,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
                 </Text>
               </View>
               {themeMode === 'system' && (
-                <Text style={[styles.checkmark, { color: currentColors.primary }]}>✓</Text>
+                <Text style={[styles.checkmark, { color: currentColors.text }]}>✓</Text>
               )}
             </TouchableOpacity>
             
@@ -242,7 +259,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
                 </Text>
               </View>
               {themeMode === 'light' && (
-                <Text style={[styles.checkmark, { color: currentColors.primary }]}>✓</Text>
+                <Text style={[styles.checkmark, { color: currentColors.text }]}>✓</Text>
               )}
             </TouchableOpacity>
             
@@ -258,7 +275,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
                 </Text>
               </View>
               {themeMode === 'dark' && (
-                <Text style={[styles.checkmark, { color: currentColors.primary }]}>✓</Text>
+                <Text style={[styles.checkmark, { color: currentColors.text }]}>✓</Text>
               )}
             </TouchableOpacity>
           </Card.Content>
@@ -274,30 +291,16 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
               <Switch
                 value={notificationsEnabled}
                 onValueChange={setNotificationsEnabled}
-                trackColor={{ false: currentColors.border, true: currentColors.primaryLight }}
-                thumbColor={notificationsEnabled ? currentColors.primary : currentColors.textTertiary}
+                trackColor={{
+                  false: '#D1D5DB',
+                  true: '#6B7280'
+                }}
+                thumbColor={notificationsEnabled ? '#FFFFFF' : '#FFFFFF'}
               />
             </View>
           </Card.Content>
         </Card>
-
-        <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
-          <Card.Content>
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={[styles.settingLabel, { color: currentColors.text }]}>Biometric Login</Text>
-                <Text style={[styles.settingDescription, { color: currentColors.textSecondary }]}>Use Face ID or Touch ID</Text>
-              </View>
-              <Switch
-                value={biometricEnabled}
-                onValueChange={setBiometricEnabled}
-                trackColor={{ false: currentColors.border, true: currentColors.primaryLight }}
-                thumbColor={biometricEnabled ? currentColors.primary : currentColors.textTertiary}
-              />
-            </View>
-          </Card.Content>
-        </Card>
-
+        
         <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
           <Card.Content>
             <TouchableOpacity
@@ -317,31 +320,35 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
         <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
           <Card.Content>
             <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: currentColors.text }]}>Account</Text>
+              <Text style={[styles.sectionTitle, { color: currentColors.text }]}>Legal</Text>
             </View>
-            {userData && (
-              <View style={styles.accountInfo}>
-                <View style={[styles.infoRow, { borderBottomColor: currentColors.borderLight }]}>
-                  <Text style={[styles.infoLabel, { color: currentColors.textSecondary }]}>Annual Salary:</Text>
-                  <Text style={[styles.infoValue, { color: currentColors.text }]}>
-                    ${userData.salary?.annualSalary?.toLocaleString() || 'N/A'}
-                  </Text>
-                </View>
-                <View style={[styles.infoRow, { borderBottomColor: currentColors.borderLight }]}>
-                  <Text style={[styles.infoLabel, { color: currentColors.textSecondary }]}>State:</Text>
-                  <Text style={[styles.infoValue, { color: currentColors.text }]}>{userData.salary?.state || 'N/A'}</Text>
-                </View>
-                <View style={[styles.infoRow, { borderBottomColor: currentColors.borderLight }]}>
-                  <Text style={[styles.infoLabel, { color: currentColors.textSecondary }]}>Living Situation:</Text>
-                  <Text style={[styles.infoValue, { color: currentColors.text }]}>
-                    {userData.expenses?.livingSituation
-                      ? userData.expenses.livingSituation.charAt(0).toUpperCase() +
-                        userData.expenses.livingSituation.slice(1)
-                      : 'N/A'}
-                  </Text>
-                </View>
+            <TouchableOpacity
+              style={styles.appearanceOption}
+              onPress={handleTermsAndConditions}
+              activeOpacity={0.7}
+            >
+              <View style={styles.appearanceInfo}>
+                <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Terms & Conditions</Text>
+                <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
+                  Read our terms of service
+                </Text>
               </View>
-            )}
+              <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={[styles.appearanceOption, { borderBottomWidth: 0 }]}
+              onPress={handlePrivacyPolicy}
+              activeOpacity={0.7}
+            >
+              <View style={styles.appearanceInfo}>
+                <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Privacy Policy</Text>
+                <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
+                  Learn how we protect your data
+                </Text>
+              </View>
+              <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
+            </TouchableOpacity>
           </Card.Content>
         </Card>
 
@@ -374,7 +381,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
         </Card>
 
         <Text style={styles.copyright}>
-          © 2026 Sagar Sahu. All Right Reserved
+          © 2026 Sagar Sahu. All Rights Reserved.
         </Text>
       </ScrollView>
       <SafeAreaView edges={['bottom']} style={styles.footerContainer}>

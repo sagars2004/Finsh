@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Animated, Platform, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Animated, Platform, Dimensions, Easing } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -11,6 +11,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface WelcomeScreenProps {
   onNext: () => void;
+  navigation?: any;
 }
 
 interface Bubble {
@@ -23,7 +24,7 @@ interface Bubble {
   delay: number;
 }
 
-export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
+export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
   const { currentColors, isDark } = useTheme();
   const translateY = useRef(new Animated.Value(0)).current;
   
@@ -173,31 +174,51 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
 
     // Animate bubbles drifting left with continuous scrolling
     const bubbleAnimations = bubbles.map((bubble: Bubble) => {
-      // Create seamless continuous loop
+      // Calculate when bubble should disappear (when rightmost point goes off left edge)
+      // Rightmost point = translateX + bubble.size/2
+      // We want bubbles to flow all the way to the left edge and beyond
+      // Set disappearX so the rightmost point reaches -bubble.size/2 (fully off screen)
+      // So: translateX + bubble.size/2 = -bubble.size/2
+      // Therefore: translateX = -bubble.size
+      const disappearX = -bubble.size;
+      
+      // Start position on right side (rightmost point at right edge + padding)
+      // Rightmost point = SCREEN_WIDTH + padding, so translateX = SCREEN_WIDTH + padding - bubble.size/2
+      const padding = 20;
+      const startX = SCREEN_WIDTH + padding - bubble.size / 2;
+      
+      // Distance to travel (from initial position to disappear position)
+      const travelDistance = bubble.initialX - disappearX;
+      
+      // Calculate constant speed (pixels per millisecond)
+      const speed = SCREEN_WIDTH / bubble.duration; // pixels per ms
+      
+      // Duration for first segment based on actual distance
+      const firstSegmentDuration = travelDistance / speed;
+      
+      // Create seamless continuous loop with constant speed
       const createContinuousAnimation = () => {
-        // Calculate duration for first segment (from initial position to left edge)
-        const totalDistance = bubble.initialX + 20; // Distance from initial X to left off-screen
-        const screenDistance = SCREEN_WIDTH + 40; // Total screen width + margins
-        const firstSegmentDuration = (totalDistance / screenDistance) * bubble.duration;
-        
         return Animated.loop(
           Animated.sequence([
-            // Move from initial position to left off-screen
+            // Move from initial position to disappear position (leftmost reaches left edge)
             Animated.timing(bubble.startX, {
-              toValue: -20,
+              toValue: disappearX,
               duration: firstSegmentDuration,
+              easing: Easing.linear, // Constant speed, no easing
               useNativeDriver: true,
             }),
-            // Instantly reset to right side (start of next cycle)
+            // Instantly reset to right side (position leftmost at right edge)
             Animated.timing(bubble.startX, {
-              toValue: SCREEN_WIDTH + 20,
+              toValue: startX,
               duration: 0,
               useNativeDriver: true,
             }),
             // Continue moving left from right edge to maintain continuous flow
+            // Full screen width + bubble size distance at constant speed
             Animated.timing(bubble.startX, {
-              toValue: -20,
+              toValue: disappearX,
               duration: bubble.duration,
+              easing: Easing.linear, // Constant speed, no easing
               useNativeDriver: true,
             }),
           ])
@@ -244,9 +265,10 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
     bubbleContainer: {
       position: 'absolute',
       top: 0,
-      left: 0,
+      left: -20, // Allow bubbles to flow beyond the left edge
       right: 0,
       bottom: 0,
+      width: SCREEN_WIDTH + 40, // Extend container to allow bubbles to flow off edge
       pointerEvents: 'none', // Allow touches to pass through
     },
     bubble: {
@@ -327,16 +349,18 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
     },
     buttonContainer: {
       paddingVertical: spacing.lg,
+      flexDirection: 'row',
+      gap: spacing.md,
     },
     button: {
-      width: '100%',
+      flex: 1,
     },
     buttonContent: {
       paddingVertical: spacing.sm,
     },
     buttonLabel: {
       ...typography.button,
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: '700',
     },
   });
@@ -458,6 +482,17 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
             labelStyle={styles.buttonLabel}
           >
             Get Started
+          </Button>
+          <Button
+            mode="outlined"
+            onPress={() => navigation?.navigate('Tutorial')}
+            buttonColor="transparent"
+            textColor={isDark ? '#E5E5E5' : '#000000'}
+            style={[styles.button, { borderColor: isDark ? '#E5E5E5' : '#000000', borderWidth: 2 }]}
+            contentStyle={styles.buttonContent}
+            labelStyle={styles.buttonLabel}
+          >
+            Learn More
           </Button>
         </View>
       </ScrollView>

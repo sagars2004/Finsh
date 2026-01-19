@@ -10,10 +10,12 @@ import { TradeoffCardsScreen } from '../components/Tradeoffs/TradeoffCardsScreen
 import { BreakdownScreen } from '../components/PaycheckBreakdown/BreakdownScreen';
 import { SettingsScreen } from '../components/Settings/SettingsScreen';
 import { PlanScreen } from '../components/Plan/PlanScreen';
+import { TutorialScreen } from '../components/Onboarding/TutorialScreen';
 import { useUser } from '../context/UserContext';
 
 export type RootStackParamList = {
   Welcome: undefined;
+  Tutorial: undefined;
   SalaryInfo: undefined;
   Context: undefined;
   Confirmation: undefined;
@@ -49,7 +51,16 @@ export function AppNavigator() {
           {(props) => (
             <WelcomeScreen
               {...props}
+              navigation={props.navigation}
               onNext={() => props.navigation.navigate('SalaryInfo')}
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Tutorial">
+          {(props) => (
+            <TutorialScreen
+              {...props}
+              navigation={props.navigation}
             />
           )}
         </Stack.Screen>

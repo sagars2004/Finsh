@@ -20,7 +20,7 @@ interface ConfirmationScreenProps {
 export function ConfirmationScreen({ onComplete, onBack, navigation }: ConfirmationScreenProps) {
   const { onboardingData } = useOnboarding();
   const { setUserData } = useUser();
-  const { currentColors } = useTheme();
+  const { currentColors, isDark } = useTheme();
 
   const handleComplete = async () => {
     // Combine onboarding data into UserData
@@ -184,7 +184,7 @@ export function ConfirmationScreen({ onComplete, onBack, navigation }: Confirmat
             mode="outlined"
             onPress={onBack}
             buttonColor={currentColors.surface}
-            textColor={currentColors.primary}
+            textColor={currentColors.text}
             style={[styles.backButton, styles.button]}
             contentStyle={styles.buttonContent}
           >
@@ -193,8 +193,8 @@ export function ConfirmationScreen({ onComplete, onBack, navigation }: Confirmat
           <Button
             mode="contained"
             onPress={handleComplete}
-            buttonColor={currentColors.primary}
-            textColor={currentColors.surface}
+            buttonColor={isDark ? '#E5E5E5' : '#000000'}
+            textColor={isDark ? '#000000' : '#FFFFFF'}
             style={styles.button}
             contentStyle={styles.buttonContent}
           >

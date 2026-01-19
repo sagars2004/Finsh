@@ -11,7 +11,7 @@ interface ActionButtonsProps {
 }
 
 export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButtonsProps) {
-  const { currentColors } = useTheme();
+  const { currentColors, isDark } = useTheme();
 
   const styles = StyleSheet.create({
     container: {
@@ -35,8 +35,8 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
       <Button
         mode="contained"
         onPress={onViewTradeoffs}
-        buttonColor={currentColors.primary}
-        textColor={currentColors.surface}
+        buttonColor={isDark ? '#E5E5E5' : '#000000'}
+        textColor={isDark ? '#000000' : '#FFFFFF'}
         style={styles.button}
         contentStyle={styles.buttonContent}
         labelStyle={styles.buttonLabel}
@@ -48,7 +48,7 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
         mode="outlined"
         onPress={onViewBreakdown}
         buttonColor={currentColors.surfaceSecondary}
-        textColor={currentColors.primary}
+        textColor={currentColors.text}
         style={styles.button}
         contentStyle={styles.buttonContent}
         labelStyle={styles.buttonLabel}

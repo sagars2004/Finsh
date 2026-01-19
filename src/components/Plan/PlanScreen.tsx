@@ -73,7 +73,8 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
     },
     backButtonText: {
       ...typography.body,
-      color: currentColors.primary,
+      color: currentColors.text,
+      fontWeight: '700',
     },
     title: {
       ...typography.h3,
@@ -181,7 +182,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
     },
     comparisonAmount: {
       ...typography.body,
-      color: currentColors.primary,
+      color: currentColors.text,
       fontWeight: '700',
       marginLeft: spacing.md,
     },
@@ -244,7 +245,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
         </View>
         <View style={styles.emptyContainer}>
           <MaterialCommunityIcons name="chart-line" size={64} color={currentColors.textSecondary} />
-          <Text style={styles.emptyText}>Please complete onboarding to see your plan.</Text>
+          <Text style={styles.emptyText}>Please complete onboarding to see your Finsh tank.</Text>
         </View>
       </SafeAreaView>
     );
@@ -342,7 +343,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                 </View>
                 <View style={[styles.statRow, { borderBottomWidth: 0, paddingTop: spacing.sm }]}>
                   <Text style={[styles.statLabel, { fontWeight: '700' }]}>Net Income</Text>
-                  <Text style={[styles.statValue, { fontSize: 18, color: currentColors.primary }]}>
+                  <Text style={[styles.statValue, { fontSize: 18, color: currentColors.text, fontWeight: '700' }]}>
                     {formatCurrency(annualEarnings.annualNet)}
                   </Text>
                 </View>
@@ -378,7 +379,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                           styles.chartBar,
                           {
                             height: `${(data.net / maxGrossNet) * 100}%`,
-                            backgroundColor: currentColors.primary,
+                            backgroundColor: currentColors.text,
                           },
                         ]}
                       />
@@ -398,7 +399,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                     <Text style={styles.chartLabel}>Gross</Text>
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ width: 12, height: 12, backgroundColor: currentColors.primary, marginRight: spacing.xs }} />
+                    <View style={{ width: 12, height: 12, backgroundColor: currentColors.text, marginRight: spacing.xs }} />
                     <Text style={styles.chartLabel}>Net</Text>
                   </View>
                 </View>
@@ -423,7 +424,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                           styles.chartBar,
                           {
                             height: `${(proj.cumulativeNet / maxCumulative) * 100}%`,
-                            backgroundColor: currentColors.primary,
+                            backgroundColor: currentColors.text,
                           },
                         ]}
                       />
