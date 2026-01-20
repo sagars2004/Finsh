@@ -7,6 +7,8 @@ import { useOnboarding } from '../../context/OnboardingContext';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
+import { useRoute } from '@react-navigation/native';
+
 interface FooterProps {
   onHomePress?: () => void;
   onPlanPress?: () => void;
@@ -20,29 +22,39 @@ export function Footer({ onHomePress, onPlanPress, onTipsPress, onSettingsPress,
   const { clearUserData } = useUser();
   const { resetOnboarding } = useOnboarding();
 
-  const handleSettingsPress = () => {
+  // Get current route to handle navigation history intelligently
+  // If we are already on a "Tab" screen, we replace it.
+  // If we are on a "Base" screen (Dashboard, Onboarding), we navigate (push).
+  let routeName = '';
+  try {
+    const route = useRoute();
+    routeName = route.name;
+  } catch (e) {
+    // Fallback if used outside navigation context
+    console.log('Footer used outside navigation context');
+  }
+
+  const isTabScreen = (name: string) => ['Plan', 'Settings', 'Tips'].includes(name);
+
+  const handleNavigation = (targetScreen: string, localHandler?: () => void) => {
     if (navigation) {
-      navigation.navigate('Settings');
-    } else if (onSettingsPress) {
-      onSettingsPress();
+      if (routeName === targetScreen) return; // Already on screen
+
+      if (isTabScreen(routeName)) {
+        // Replace current tab with new tab to prevent stack buildup
+        navigation.replace(targetScreen);
+      } else {
+        // Push tab on top of base screen
+        navigation.navigate(targetScreen);
+      }
+    } else if (localHandler) {
+      localHandler();
     }
   };
 
-  const handlePlanPress = () => {
-    if (navigation) {
-      navigation.navigate('Plan');
-    } else if (onPlanPress) {
-      onPlanPress();
-    }
-  };
-
-  const handleTipsPress = () => {
-    if (navigation) {
-      navigation.navigate('Tips');
-    } else if (onTipsPress) {
-      onTipsPress();
-    }
-  };
+  const handleSettingsPress = () => handleNavigation('Settings', onSettingsPress);
+  const handlePlanPress = () => handleNavigation('Plan', onPlanPress);
+  const handleTipsPress = () => handleNavigation('Tips', onTipsPress);
 
   const handleHomePress = async () => {
     // Check if we're already on Welcome screen

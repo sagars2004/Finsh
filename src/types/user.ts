@@ -1,10 +1,17 @@
 export type PayFrequency = 'weekly' | 'biweekly' | 'semimonthly' | 'monthly';
 
+export interface CustomBenefit {
+  id: string;
+  name: string;
+  amount: number;
+}
+
 export interface SalaryInput {
   annualSalary: number;
   payFrequency: PayFrequency;
   state: string;
-  payPeriodsPerYear?: number; // For "other" frequency, stores custom pay periods per year
+  payPeriodsPerYear?: number;
+  customBenefits?: CustomBenefit[];
 }
 
 export interface ExpenseContext {

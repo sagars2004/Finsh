@@ -27,7 +27,7 @@ const STATE_TAX_RATES: Record<string, number> = {
   Texas: 0,
   Washington: 0,
   Wyoming: 0,
-  
+
   // Low tax states (~1-3%)
   Colorado: 0.045, // Flat 4.5%
   Illinois: 0.0495, // Flat 4.95%
@@ -35,7 +35,7 @@ const STATE_TAX_RATES: Record<string, number> = {
   Michigan: 0.0425, // Flat 4.25%
   Pennsylvania: 0.0307, // Flat 3.07%
   Utah: 0.0495, // Flat 4.95%
-  
+
   // Medium tax states (~4-6%)
   Alabama: 0.05,
   Arizona: 0.05,
@@ -64,7 +64,7 @@ const STATE_TAX_RATES: Record<string, number> = {
   Virginia: 0.0575,
   'West Virginia': 0.065,
   Wisconsin: 0.053,
-  
+
   // Higher tax states (~7-13%)
   California: 0.09,
   Connecticut: 0.06,
@@ -105,7 +105,7 @@ function calculateFederalTax(grossPay: number, annualSalary: number): number {
   ];
 
   let totalTax = 0;
-  
+
   // Calculate tax for each bracket
   for (const bracket of brackets) {
     if (annualSalary > bracket.min) {
@@ -146,7 +146,7 @@ function calculateGrossPay(salary: number, frequency: PayFrequency, payPeriodsPe
   if (payPeriodsPerYear && payPeriodsPerYear > 0) {
     return salary / payPeriodsPerYear;
   }
-  
+
   switch (frequency) {
     case 'weekly':
       return salary / 52;
@@ -185,13 +185,13 @@ function calculateGrossPay(salary: number, frequency: PayFrequency, payPeriodsPe
  */
 export function estimateTakeHome(salaryInput: SalaryInput): PaycheckBreakdown {
   const grossPay = calculateGrossPay(salaryInput.annualSalary, salaryInput.payFrequency, salaryInput.payPeriodsPerYear);
-  
+
   // Calculate federal tax using progressive brackets
   const federalTax = calculateFederalTax(grossPay, salaryInput.annualSalary);
-  
+
   // Calculate state tax using state-specific rates
   const stateTax = calculateStateTax(grossPay, salaryInput.state);
-  
+
   // FICA (Social Security + Medicare) - Federal Insurance Contributions Act
   // 
   // Social Security Tax:
@@ -209,29 +209,38 @@ export function estimateTakeHome(salaryInput: SalaryInput): PaycheckBreakdown {
   const socialSecurityRate = salaryInput.annualSalary <= 168600 ? 0.062 : 0;
   const medicareRate = 0.0145;
   const fica = grossPay * (socialSecurityRate + medicareRate);
-  
+
   const totalTaxes = federalTax + stateTax + fica;
-  
-  // Benefits (health insurance, retirement)
-  // 
-  // Health Insurance:
-  // - Estimated at 5% of gross pay
-  // - Actual costs vary widely by employer, plan type, and coverage level
-  // - Typically ranges from 2-8% of gross pay
-  //
-  // Retirement (401k):
-  // - Estimated at 3% of gross pay
-  // - Represents typical employee contribution to 401k
-  // - Many employers offer matching (e.g., match 50% up to 6% of salary)
-  // - Actual contribution varies by individual choice
-  const healthInsurance = grossPay * 0.05; // ~5% of gross pay
-  const retirement = grossPay * 0.03; // ~3% for 401k (typical employee contribution)
-  
-  const totalBenefits = healthInsurance + retirement;
-  
+
+  // Calculate benefits (Custom or Estimated)
+  let healthInsurance = 0;
+  let retirement = 0;
+  let otherBenefits = 0;
+  let totalBenefits = 0;
+
+  if (salaryInput.customBenefits) {
+    // Use custom benefits if provided
+    salaryInput.customBenefits.forEach(benefit => {
+      const amount = benefit.amount;
+      if (benefit.name === 'Health Insurance') {
+        healthInsurance += amount;
+      } else if (benefit.name === 'Retirement') {
+        retirement += amount;
+      } else {
+        otherBenefits += amount;
+      }
+      totalBenefits += amount;
+    });
+  } else {
+    // Default estimates if no custom benefits provided
+    healthInsurance = grossPay * 0.05; // ~5%
+    retirement = grossPay * 0.03;      // ~3%
+    totalBenefits = healthInsurance + retirement;
+  }
+
   // Calculate take-home
   const takeHomePay = grossPay - totalTaxes - totalBenefits;
-  
+
   return {
     grossPay,
     taxes: {
@@ -243,7 +252,7 @@ export function estimateTakeHome(salaryInput: SalaryInput): PaycheckBreakdown {
     benefits: {
       healthInsurance,
       retirement,
-      other: 0,
+      other: otherBenefits,
       total: totalBenefits,
     },
     takeHomePay,

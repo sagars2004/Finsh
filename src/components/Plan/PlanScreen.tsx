@@ -676,7 +676,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                             <View style={{ width: 12, height: 12, backgroundColor: '#9C27B0', marginRight: spacing.xs, borderRadius: 2 }} />
-                            <Text style={[styles.chartLabel, { color: currentColors.text }]}>Benefits (Health, 401k, etc.)</Text>
+                            <Text style={[styles.chartLabel, { color: currentColors.text }]}>Benefits</Text>
                           </View>
                           <Text style={[styles.chartLabel, { fontWeight: '600', color: currentColors.text }]}>
                             {formatCurrency(currentMonthBreakdown.totalBenefits)}
