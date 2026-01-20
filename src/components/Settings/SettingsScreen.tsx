@@ -64,13 +64,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
     );
   };
 
-  const handleExportData = () => {
-    Alert.alert(
-      'Export Data',
-      'Your data export feature will be available soon.',
-      [{ text: 'OK' }]
-    );
-  };
+  
 
   const handleTermsAndConditions = () => {
     Alert.alert(
@@ -334,22 +328,6 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
                 thumbColor={notificationsEnabled ? '#FFFFFF' : '#FFFFFF'}
               />
             </View>
-          </Card.Content>
-        </Card>
-        
-        <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
-          <Card.Content>
-            <TouchableOpacity
-              style={styles.settingRow}
-              onPress={handleExportData}
-              activeOpacity={0.7}
-            >
-              <View style={styles.settingInfo}>
-                <Text style={[styles.settingLabel, { color: currentColors.text }]}>Export Data</Text>
-                <Text style={[styles.settingDescription, { color: currentColors.textSecondary }]}>Download your information</Text>
-              </View>
-              <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
-            </TouchableOpacity>
           </Card.Content>
         </Card>
 

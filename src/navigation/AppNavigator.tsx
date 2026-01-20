@@ -12,6 +12,7 @@ import { SettingsScreen } from '../components/Settings/SettingsScreen';
 import { PlanScreen } from '../components/Plan/PlanScreen';
 import { TutorialScreen } from '../components/Onboarding/TutorialScreen';
 import { useUser } from '../context/UserContext';
+import { TipsScreen } from '../components/Tips/TipsScreen';
 
 export type RootStackParamList = {
   Welcome: undefined;
@@ -24,6 +25,7 @@ export type RootStackParamList = {
   Breakdown: undefined;
   Settings: undefined;
   Plan: undefined;
+  Tips: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -33,10 +35,10 @@ export function AppNavigator() {
 
   // Determine initial route based on onboarding status
   const onboardingComplete = userData?.onboardingComplete === true;
-  
-  const initialRoute: keyof RootStackParamList = 
-    onboardingComplete ? 'Dashboard' : 
-    'Welcome';
+
+  const initialRoute: keyof RootStackParamList =
+    onboardingComplete ? 'Dashboard' :
+      'Welcome';
 
   return (
     <NavigationContainer>
@@ -153,6 +155,15 @@ export function AppNavigator() {
                 });
               }}
               onNavigateToSettings={() => props.navigation.navigate('Settings')}
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Tips">
+          {(props) => (
+            <TipsScreen
+              {...props}
+              navigation={props.navigation}
+              onBack={() => props.navigation.goBack()}
             />
           )}
         </Stack.Screen>

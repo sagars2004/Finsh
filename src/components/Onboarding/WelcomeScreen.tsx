@@ -9,6 +9,9 @@ import { spacing } from '../../theme/spacing';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
+const LOGO_REGULAR = require('../../../assets/finsh_logo.png');
+const LOGO_INVERTED = require('../../../assets/finsh_logo_inverted.png');
+
 interface WelcomeScreenProps {
   onNext: () => void;
   navigation?: any;
@@ -27,17 +30,17 @@ interface Bubble {
 export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
   const { currentColors, isDark } = useTheme();
   const translateY = useRef(new Animated.Value(0)).current;
-  
+
   // Entrance animations for text elements
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
-  
+
   // Track if logo animation is running to prevent duplicate starts
   const logoAnimationRef = useRef<Animated.CompositeAnimation | null>(null);
-  
+
   // Track intro sequence state (4 seconds of logo only)
   const [showIntro, setShowIntro] = useState(true);
-  
+
   // Create bubbles - small circular particles that drift left with random spawning
   // Bubbles appear strictly above the title and below all text content
   const [bubbles] = useState<Bubble[]>(() => {
@@ -48,33 +51,33 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
     const baseDuration = 8000; // Base duration for consistent speed
     const minDuration = 6000; // Minimum duration (faster bubbles)
     const maxDuration = 12000; // Maximum duration (slower bubbles)
-    
+
     // Define zones - title starts around 30-35% of screen (adjust based on layout)
     const titleTopZone = SCREEN_HEIGHT * 0.30; // Everything below this is title/content
     const contentBottomZone = SCREEN_HEIGHT * 0.60; // Everything below this is safe for bubbles
-    
+
     // Create bubbles in the top area (strictly above title: 0% to titleTopZone)
     for (let i = 0; i < topBubbleCount; i++) {
       // Space out bubbles across a wide range on the right side
       const spreadWidth = SCREEN_WIDTH * 3;
       const initialX = SCREEN_WIDTH + 20 + (i / topBubbleCount) * spreadWidth;
-      
+
       // Y position in top area only (strictly above title)
       const minY = SCREEN_HEIGHT * 0.0; // Start from very top
       const maxY = titleTopZone; // Up to where title starts
       const startY = minY + Math.random() * (maxY - minY);
-      
+
       // Random size: 4-8 pixels
       const size = Math.random() * 4 + 4;
-      
+
       // Random duration for varied speeds
       const duration = minDuration + Math.random() * (maxDuration - minDuration);
-      
+
       // Calculate delay based on position to ensure continuous flow
       const distanceToScreen = initialX - SCREEN_WIDTH - 20;
       const averageSpeed = SCREEN_WIDTH / baseDuration;
       const delay = Math.max(0, distanceToScreen / averageSpeed);
-      
+
       bubblesArray.push({
         id: i,
         size,
@@ -85,30 +88,30 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
         delay,
       });
     }
-    
+
     // Create bubbles in the bottom area (below all content)
     for (let i = topBubbleCount; i < totalCount; i++) {
       const bottomBubbleIndex = i - topBubbleCount;
       // Space out bubbles across a wide range on the right side
       const spreadWidth = SCREEN_WIDTH * 3;
       const initialX = SCREEN_WIDTH + 20 + (bottomBubbleIndex / bottomBubbleCount) * spreadWidth;
-      
+
       // Y position in bottom area only (below all text/features)
       const minY = contentBottomZone; // Start from below content area
       const maxY = SCREEN_HEIGHT * 0.85; // Up to 85% down (leaving some space for button)
       const startY = minY + Math.random() * (maxY - minY);
-      
+
       // Random size: 4-8 pixels
       const size = Math.random() * 4 + 4;
-      
+
       // Random duration for varied speeds
       const duration = minDuration + Math.random() * (maxDuration - minDuration);
-      
+
       // Calculate delay based on position to ensure continuous flow
       const distanceToScreen = initialX - SCREEN_WIDTH - 20;
       const averageSpeed = SCREEN_WIDTH / baseDuration;
       const delay = Math.max(0, distanceToScreen / averageSpeed);
-      
+
       bubblesArray.push({
         id: i,
         size,
@@ -119,25 +122,25 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
         delay,
       });
     }
-    
+
     return bubblesArray;
   });
 
   useEffect(() => {
     // Reset intro state when component mounts/navigates back
     setShowIntro(true);
-    
+
     // Reset animation values when component mounts/remounts
     translateY.setValue(0);
     fadeAnim.setValue(0);
     slideAnim.setValue(20);
-    
+
     // Start intro timer: show only logo for 4 seconds
     let introTimer: NodeJS.Timeout | null = null;
     introTimer = setTimeout(() => {
       setShowIntro(false);
     }, 4000);
-    
+
     // Create a continuous floating/bobbing animation with sinusoidal motion
     // Using easing to approximate smooth sine wave movement
     const createFloatAnimation = () => {
@@ -163,7 +166,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
     if (logoAnimationRef.current) {
       logoAnimationRef.current.stop();
     }
-    
+
     const logoAnimation = createFloatAnimation();
     logoAnimation.start();
     logoAnimationRef.current = logoAnimation;
@@ -193,21 +196,21 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
       // So: translateX + bubble.size/2 = -bubble.size/2
       // Therefore: translateX = -bubble.size
       const disappearX = -bubble.size;
-      
+
       // Start position on right side (rightmost point at right edge + padding)
       // Rightmost point = SCREEN_WIDTH + padding, so translateX = SCREEN_WIDTH + padding - bubble.size/2
       const padding = 20;
       const startX = SCREEN_WIDTH + padding - bubble.size / 2;
-      
+
       // Distance to travel (from initial position to disappear position)
       const travelDistance = bubble.initialX - disappearX;
-      
+
       // Calculate constant speed (pixels per millisecond)
       const speed = SCREEN_WIDTH / bubble.duration; // pixels per ms
-      
+
       // Duration for first segment based on actual distance
       const firstSegmentDuration = travelDistance / speed;
-      
+
       // Create seamless continuous loop with constant speed
       const createContinuousAnimation = () => {
         return Animated.loop(
@@ -415,7 +418,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
               />
             ))}
           </View>
-          
+
           <Animated.View
             style={[
               styles.logoContainer,
@@ -427,15 +430,11 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
           >
             <View style={styles.logoWrapper}>
               <Image
-                source={
-                  isDark
-                    ? require('../../../assets/finsh_logo_inverted.png')
-                    : require('../../../assets/finsh_logo.png')
-                }
+                source={isDark ? LOGO_INVERTED : LOGO_REGULAR}
                 style={styles.logo}
                 resizeMode="contain"
                 onError={(error) => {
-                  console.error('Logo image failed to load:', error);
+                  console.error('Logo image failed to load:', error.nativeEvent);
                 }}
                 onLoad={() => {
                   // Ensure logo is visible after load
@@ -443,7 +442,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
               />
             </View>
           </Animated.View>
-          
+
           <Animated.View
             style={[
               styles.textContainer,
@@ -457,7 +456,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
             <Text style={styles.subtitle}>
               Understand your paycheck before it's in the bank, plan out where your money might go, and make smarter decisions from day one.
             </Text>
-            
+
             {/* Feature highlights */}
             <View style={styles.featuresContainer}>
               <View style={styles.feature}>
@@ -485,13 +484,13 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
                 <Text style={styles.featureText}>Planning Insight</Text>
               </View>
             </View>
-            
+
             <Text style={styles.description}>
               Curate your personal Finsh tank and make your financial currents flow effortlessly!
             </Text>
           </Animated.View>
         </View>
-        
+
         <View style={styles.buttonContainer}>
           <Button
             mode="contained"

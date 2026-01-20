@@ -10,11 +10,12 @@ import { spacing } from '../../theme/spacing';
 interface FooterProps {
   onHomePress?: () => void;
   onPlanPress?: () => void;
+  onTipsPress?: () => void;
   onSettingsPress?: () => void;
-  navigation?: any; // For navigation to settings
+  navigation?: any; // For navigation to settings and tips
 }
 
-export function Footer({ onHomePress, onPlanPress, onSettingsPress, navigation }: FooterProps) {
+export function Footer({ onHomePress, onPlanPress, onTipsPress, onSettingsPress, navigation }: FooterProps) {
   const { currentColors } = useTheme();
   const { clearUserData } = useUser();
   const { resetOnboarding } = useOnboarding();
@@ -35,10 +36,18 @@ export function Footer({ onHomePress, onPlanPress, onSettingsPress, navigation }
     }
   };
 
+  const handleTipsPress = () => {
+    if (navigation) {
+      navigation.navigate('Tips');
+    } else if (onTipsPress) {
+      onTipsPress();
+    }
+  };
+
   const handleHomePress = async () => {
     // Check if we're already on Welcome screen
     const currentRoute = navigation?.getState()?.routes[navigation?.getState()?.index || 0]?.name;
-    
+
     if (currentRoute === 'Welcome') {
       // Already on Welcome screen, no action needed
       return;
@@ -126,7 +135,7 @@ export function Footer({ onHomePress, onPlanPress, onSettingsPress, navigation }
         />
         <Text style={styles.label}>Home</Text>
       </TouchableOpacity>
-      
+
       <TouchableOpacity
         style={styles.iconButton}
         onPress={handlePlanPress}
@@ -140,7 +149,21 @@ export function Footer({ onHomePress, onPlanPress, onSettingsPress, navigation }
         />
         <Text style={styles.label}>Plan</Text>
       </TouchableOpacity>
-      
+
+      <TouchableOpacity
+        style={styles.iconButton}
+        onPress={handleTipsPress}
+        activeOpacity={0.7}
+      >
+        <MaterialCommunityIcons
+          name="lightbulb-on-outline"
+          size={28}
+          color={currentColors.text}
+          style={styles.icon}
+        />
+        <Text style={styles.label}>Tips</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.iconButton}
         onPress={handleSettingsPress}

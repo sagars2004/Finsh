@@ -34,6 +34,35 @@ interface ExpenseItem {
   amount: string;
 }
 
+// Helper to format currency
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+// Helper to get max value for chart scaling
+const getMaxValue = (data: number[]) => {
+  return Math.max(...data, 0) * 1.1; // Add 10% padding
+};
+
+// Helper to get pay periods per month
+function getPayPeriodsPerMonth(frequency: string, payPeriodsPerYear?: number): number {
+  if (payPeriodsPerYear && payPeriodsPerYear > 0) {
+    return payPeriodsPerYear / 12;
+  }
+  switch (frequency) {
+    case 'weekly': return 52 / 12;
+    case 'biweekly': return 26 / 12;
+    case 'semimonthly': return 24 / 12;
+    case 'monthly': return 1;
+    default: return 1;
+  }
+}
+
 export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, navigation }: PlanScreenProps) {
   const { currentColors, isDark } = useTheme();
   const { userData } = useUser();
@@ -72,6 +101,35 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
     if (!userData?.salary || totalMonthlyExpenses === 0) return [];
     return calculateExpenseAccumulation(userData.salary, totalMonthlyExpenses, parseInt(monthsToProject) || 12);
   }, [userData?.salary, totalMonthlyExpenses, monthsToProject]);
+
+  // Get current month breakdown for single month chart
+  const currentMonthBreakdown = useMemo(() => {
+    if (!userData?.salary) return null;
+    const breakdown = estimateTakeHome(userData.salary);
+    const payPeriodsPerMonth = getPayPeriodsPerMonth(userData.salary.payFrequency, userData.salary.payPeriodsPerYear);
+
+    const gross = breakdown.grossPay * payPeriodsPerMonth;
+    const federalTax = breakdown.taxes.federal * payPeriodsPerMonth;
+    const stateTax = breakdown.taxes.state * payPeriodsPerMonth;
+    const fica = breakdown.taxes.fica * payPeriodsPerMonth;
+    // Calculate total benefits (Consolidated)
+    const totalBenefits = breakdown.benefits.total * payPeriodsPerMonth;
+    const expenses = totalMonthlyExpenses;
+
+    // Calculate total deductions to ensure bar doesn't exceed gross
+    const totalDeductions = federalTax + stateTax + fica + totalBenefits + expenses;
+    const calculatedNet = gross - totalDeductions;
+
+    return {
+      gross,
+      federalTax,
+      stateTax,
+      fica,
+      totalBenefits,
+      net: Math.max(0, calculatedNet), // Ensure net is never negative
+      expenses,
+    };
+  }, [userData?.salary, totalMonthlyExpenses]);
 
   const styles = StyleSheet.create({
     container: {
@@ -324,67 +382,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
     );
   }
 
-  // Helper to format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  // Helper to get max value for chart scaling
-  const getMaxValue = (data: number[]) => {
-    return Math.max(...data, 0) * 1.1; // Add 10% padding
-  };
-
-  // Get current month breakdown for single month chart
-  const currentMonthBreakdown = useMemo(() => {
-    if (!userData?.salary) return null;
-    const breakdown = estimateTakeHome(userData.salary);
-    const payPeriodsPerMonth = getPayPeriodsPerMonth(userData.salary.payFrequency, userData.salary.payPeriodsPerYear);
-    
-    const gross = breakdown.grossPay * payPeriodsPerMonth;
-    const federalTax = breakdown.taxes.federal * payPeriodsPerMonth;
-    const stateTax = breakdown.taxes.state * payPeriodsPerMonth;
-    const fica = breakdown.taxes.fica * payPeriodsPerMonth;
-    const healthInsurance = breakdown.benefits.healthInsurance * payPeriodsPerMonth;
-    const retirement = breakdown.benefits.retirement * payPeriodsPerMonth;
-    const net = breakdown.takeHomePay * payPeriodsPerMonth;
-    const expenses = totalMonthlyExpenses;
-    
-    // Calculate total deductions to ensure bar doesn't exceed gross
-    const totalDeductions = federalTax + stateTax + fica + healthInsurance + retirement + expenses;
-    const calculatedNet = gross - totalDeductions;
-    
-    return {
-      gross,
-      federalTax,
-      stateTax,
-      fica,
-      healthInsurance,
-      retirement,
-      net: Math.max(0, calculatedNet), // Ensure net is never negative
-      expenses,
-    };
-  }, [userData?.salary, totalMonthlyExpenses]);
-
-  // Helper to get pay periods per month
-  function getPayPeriodsPerMonth(frequency: string, payPeriodsPerYear?: number): number {
-    // If custom payPeriodsPerYear is provided (for "other" frequency), calculate from that
-    if (payPeriodsPerYear && payPeriodsPerYear > 0) {
-      return payPeriodsPerYear / 12;
-    }
-    
-    switch (frequency) {
-      case 'weekly': return 52 / 12;
-      case 'biweekly': return 26 / 12;
-      case 'semimonthly': return 24 / 12;
-      case 'monthly': return 1;
-      default: return 1;
-    }
-  }
+  // Moved hooks and helpers to top level to fix Hook Rule violations
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -450,7 +448,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                         mode="outlined"
                         value={expense.name}
                         onChangeText={(text) => {
-                          const updated = expenses.map(e => 
+                          const updated = expenses.map(e =>
                             e.id === expense.id ? { ...e, name: text } : e
                           );
                           setExpenses(updated);
@@ -467,7 +465,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                         value={expense.amount}
                         onChangeText={(text) => {
                           const filteredText = text.replace(/[^0-9.]/g, '');
-                          const updated = expenses.map(e => 
+                          const updated = expenses.map(e =>
                             e.id === expense.id ? { ...e, amount: filteredText } : e
                           );
                           setExpenses(updated);
@@ -588,21 +586,11 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                             }}
                           />
                         )}
-                        {/* Health Insurance (Dark Green) */}
-                        {currentMonthBreakdown.healthInsurance > 0 && (
+                        {/* Benefits (Purple) */}
+                        {currentMonthBreakdown.totalBenefits > 0 && (
                           <View
                             style={{
-                              height: `${(currentMonthBreakdown.healthInsurance / currentMonthBreakdown.gross) * 100}%`,
-                              backgroundColor: '#2E7D32',
-                              width: '100%',
-                            }}
-                          />
-                        )}
-                        {/* Retirement (Purple) */}
-                        {currentMonthBreakdown.retirement > 0 && (
-                          <View
-                            style={{
-                              height: `${(currentMonthBreakdown.retirement / currentMonthBreakdown.gross) * 100}%`,
+                              height: `${(currentMonthBreakdown.totalBenefits / currentMonthBreakdown.gross) * 100}%`,
                               backgroundColor: '#9C27B0',
                               width: '100%',
                             }}
@@ -630,7 +618,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                         />
                       </View>
                     </View>
-                    
+
                     {/* Labels */}
                     <View style={{ flex: 1, justifyContent: 'space-between', height: '100%', paddingLeft: spacing.sm }}>
                       {/* Gross Pay - Bottom */}
@@ -643,7 +631,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                           {formatCurrency(currentMonthBreakdown.gross)}
                         </Text>
                       </View>
-                      
+
                       {/* Federal Tax */}
                       {currentMonthBreakdown.federalTax > 0 && (
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -656,7 +644,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                           </Text>
                         </View>
                       )}
-                      
+
                       {/* State Tax */}
                       {currentMonthBreakdown.stateTax > 0 && (
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -669,7 +657,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                           </Text>
                         </View>
                       )}
-                      
+
                       {/* FICA */}
                       {currentMonthBreakdown.fica > 0 && (
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -682,33 +670,20 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                           </Text>
                         </View>
                       )}
-                      
-                      {/* Health Insurance */}
-                      {currentMonthBreakdown.healthInsurance > 0 && (
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                            <View style={{ width: 12, height: 12, backgroundColor: '#2E7D32', marginRight: spacing.xs, borderRadius: 2 }} />
-                            <Text style={[styles.chartLabel, { color: currentColors.text }]}>Health Insurance</Text>
-                          </View>
-                          <Text style={[styles.chartLabel, { fontWeight: '600', color: currentColors.text }]}>
-                            {formatCurrency(currentMonthBreakdown.healthInsurance)}
-                          </Text>
-                        </View>
-                      )}
-                      
-                      {/* Retirement */}
-                      {currentMonthBreakdown.retirement > 0 && (
+
+                      {/* Benefits */}
+                      {currentMonthBreakdown.totalBenefits > 0 && (
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                             <View style={{ width: 12, height: 12, backgroundColor: '#9C27B0', marginRight: spacing.xs, borderRadius: 2 }} />
-                            <Text style={[styles.chartLabel, { color: currentColors.text }]}>Retirement</Text>
+                            <Text style={[styles.chartLabel, { color: currentColors.text }]}>Benefits (Health, 401k, etc.)</Text>
                           </View>
                           <Text style={[styles.chartLabel, { fontWeight: '600', color: currentColors.text }]}>
-                            {formatCurrency(currentMonthBreakdown.retirement)}
+                            {formatCurrency(currentMonthBreakdown.totalBenefits)}
                           </Text>
                         </View>
                       )}
-                      
+
                       {/* Expenses */}
                       {currentMonthBreakdown.expenses > 0 && (
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -721,7 +696,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                           </Text>
                         </View>
                       )}
-                      
+
                       {/* Net Pay - Top */}
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
@@ -760,7 +735,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                     const b = Math.round(b1 + (b2 - b1) * ratio);
                     const gradientColor = `rgb(${r}, ${g}, ${b})`;
                     const barHeight = maxCumulative > 0 ? (proj.cumulativeNet / maxCumulative) * 200 : 0;
-                    
+
                     return (
                       <View
                         key={index}
@@ -875,7 +850,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
         <Footer
           navigation={navigation}
           onHomePress={onNavigateToHome}
-          onPlanPress={() => {}}
+          onPlanPress={() => { }}
           onSettingsPress={onNavigateToSettings}
         />
       </SafeAreaView>
