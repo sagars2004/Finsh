@@ -8,7 +8,7 @@ module.exports = {
   expo: {
     name: 'Finsh',
     slug: 'finsh',
-    
+
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'light',
@@ -43,6 +43,10 @@ module.exports = {
     },
     web: {
       favicon: './assets/favicon.png',
+    },
+    extra: {
+      PRIVATE_RESEND_API_KEY: process.env.PRIVATE_RESEND_API_KEY,
+      PRIVATE_EMAIL: process.env.PRIVATE_EMAIL,
     },
     scheme: 'finsh',
   },

@@ -170,6 +170,12 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
       color: currentColors.text,
       fontWeight: '700',
     },
+    sectionDescription: {
+      ...typography.caption,
+      color: currentColors.textSecondary,
+      marginBottom: spacing.md,
+      marginTop: -spacing.xs,
+    },
     statValue: {
       ...typography.body,
       color: currentColors.text,
@@ -340,6 +346,9 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
               <Text style={styles.sectionHeader}>Benefits & Deductions</Text>
               <Text style={styles.statValue}>Total: {formatCurrency(breakdown.benefits.total)}</Text>
             </View>
+            <Text style={styles.sectionDescription}>
+              Estimated at 5% for Health and 3% for Retirement. You may edit these to match your actual paystub, and add any additional deductions if needed.
+            </Text>
 
             <Card style={styles.card}>
               <Card.Content style={styles.cardContent}>

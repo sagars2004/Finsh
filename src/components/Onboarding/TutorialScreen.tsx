@@ -36,7 +36,7 @@ export function TutorialScreen({ navigation }: TutorialScreenProps) {
     {
       icon: 'cog' as const,
       title: 'Settings',
-      description: 'Customize your app experience, adjust your theme, and manage your preferences from the settings page.',
+      description: 'Customize your app experience, adjust your theme, and manage preferences, and leave reviews and feedback.',
     },
   ];
 

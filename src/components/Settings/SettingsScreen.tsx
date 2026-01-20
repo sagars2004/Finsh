@@ -1,5 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Image, TextInput, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from 'react-native-paper';
 import { Footer } from '../shared/Footer';
@@ -9,18 +10,47 @@ import { useTheme } from '../../context/ThemeContext';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
+import Constants from 'expo-constants';
+
 interface SettingsScreenProps {
   onBack: () => void;
   onNavigateToHome?: () => void;
   navigation?: any;
 }
 
+// Replace with your valid Resend API Key
+const RESEND_API_KEY = Constants.expoConfig?.extra?.PRIVATE_RESEND_API_KEY ?? '';
+const FEEDBACK_EMAIL_TO = Constants.expoConfig?.extra?.PRIVATE_EMAIL ?? '';
+
 export function SettingsScreen({ onBack, onNavigateToHome, navigation }: SettingsScreenProps) {
   const { userData, clearUserData } = useUser();
   const { resetOnboarding } = useOnboarding();
   const { themeMode, setThemeMode, currentColors, isDark } = useTheme();
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
-  const [biometricEnabled, setBiometricEnabled] = React.useState(false);
+
+  const [feedbackText, setFeedbackText] = useState('');
+  const [sendingFeedback, setSendingFeedback] = useState(false);
+  const [inCooldown, setInCooldown] = useState(false);
+
+  useEffect(() => {
+    checkCooldown();
+  }, []);
+
+  const checkCooldown = async () => {
+    try {
+      const lastTime = await AsyncStorage.getItem('LAST_FEEDBACK_TIME');
+      if (lastTime) {
+        const timeSince = Date.now() - parseInt(lastTime, 10);
+        if (timeSince < 5 * 60 * 1000) {
+          setInCooldown(true);
+          const remaining = 5 * 60 * 1000 - timeSince;
+          setTimeout(() => setInCooldown(false), remaining);
+        }
+      }
+    } catch (e) {
+      console.error('Error checking cooldown', e);
+    }
+  };
 
   const handleThemeChange = async (mode: 'system' | 'light' | 'dark') => {
     await setThemeMode(mode);
@@ -64,7 +94,61 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
     );
   };
 
-  
+  const handleSendFeedback = async () => {
+    if (inCooldown) {
+      Alert.alert(
+        "Hold up!",
+        "To prevent spam and frivolent requests, please wait 5 minutes before sending another message."
+      );
+      return;
+    }
+
+    if (!feedbackText.trim()) {
+      Alert.alert('Empty Message Body', 'Please enter some feedback before sending.');
+      return;
+    }
+
+    if (!RESEND_API_KEY || RESEND_API_KEY === 're_123456789') {
+      Alert.alert('Configuration Required', 'Please set a valid Resend API Key in SettingsScreen.tsx to send feedback.');
+      return;
+    }
+
+    setSendingFeedback(true);
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: 'onboarding@resend.dev',
+          to: FEEDBACK_EMAIL_TO,
+          subject: 'Finsh App Feedback',
+          html: `<p>${feedbackText}</p>`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Thank You!', 'Your feedback has been sent.');
+        setFeedbackText('');
+
+        await AsyncStorage.setItem('LAST_FEEDBACK_TIME', Date.now().toString());
+        setInCooldown(true);
+        setTimeout(() => setInCooldown(false), 5 * 60 * 1000);
+      } else {
+        console.error('Resend API Error:', data);
+        Alert.alert('Error', 'Failed to send feedback. Please try again later.');
+      }
+    } catch (error) {
+      console.error('Network Error:', error);
+      Alert.alert('Error', 'An error occurred while sending feedback.');
+    } finally {
+      setSendingFeedback(false);
+    }
+  };
 
   const handleTermsAndConditions = () => {
     Alert.alert(
@@ -170,22 +254,6 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
       fontSize: 20,
       fontWeight: '700',
     },
-    accountInfo: {
-      marginTop: spacing.sm,
-    },
-    infoRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingVertical: spacing.sm,
-      borderBottomWidth: 1,
-    },
-    infoLabel: {
-      ...typography.body,
-    },
-    infoValue: {
-      ...typography.body,
-      fontWeight: '500',
-    },
     dangerRow: {
       paddingVertical: spacing.sm,
     },
@@ -214,6 +282,31 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
       height: 88,
       resizeMode: 'contain',
     },
+    feedbackInput: {
+      backgroundColor: isDark ? '#FFFFFF10' : '#e9eaeaff',
+      borderRadius: 16,
+      padding: spacing.md,
+      color: currentColors.text,
+      minHeight: 100,
+      textAlignVertical: 'top',
+      marginBottom: spacing.md,
+      ...typography.body,
+    },
+    submitButton: {
+      backgroundColor: isDark ? '#ffffff4b' : '#707070ff',
+      padding: spacing.sm,
+      borderRadius: 16,
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      borderWidth: inCooldown ? 2 : 0,
+      borderColor: inCooldown ? '#EF4444' : 'transparent',
+    },
+    submitButtonText: {
+      ...typography.body,
+      color: '#FFFFFF',
+      fontWeight: '600',
+    },
     footerContainer: {
       backgroundColor: currentColors.surface,
     },
@@ -239,170 +332,210 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
         <Text style={styles.title}>Settings</Text>
         <View style={styles.placeholder} />
       </View>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
       >
-        <View style={styles.logoContainer}>
-          <Image
-            source={
-              isDark
-                ? require('../../../assets/finsh_title_inverted.png')
-                : require('../../../assets/finsh_title.png')
-            }
-            style={styles.logo}
-            accessible
-            accessibilityLabel="Finsh logo"
-          />
-        </View>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.logoContainer}>
+            <Image
+              source={
+                isDark
+                  ? require('../../../assets/finsh_title_inverted.png')
+                  : require('../../../assets/finsh_title.png')
+              }
+              style={styles.logo}
+              accessible
+              accessibilityLabel="Finsh logo"
+            />
+          </View>
 
-        <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
-          <Card.Content>
-            <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: currentColors.text }]}>Appearance</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.appearanceOption}
-              onPress={() => handleThemeChange('system')}
-              activeOpacity={0.7}
-            >
-              <View style={styles.appearanceInfo}>
-                <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>System</Text>
-                <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
-                  Follow system settings
-                </Text>
+          <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
+            <Card.Content>
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.sectionTitle, { color: currentColors.text }]}>Appearance</Text>
               </View>
-              {themeMode === 'system' && (
-                <Text style={[styles.checkmark, { color: currentColors.text }]}>✓</Text>
-              )}
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.appearanceOption}
-              onPress={() => handleThemeChange('light')}
-              activeOpacity={0.7}
-            >
-              <View style={styles.appearanceInfo}>
-                <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Light</Text>
-                <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
-                  Always use light mode
-                </Text>
-              </View>
-              {themeMode === 'light' && (
-                <Text style={[styles.checkmark, { color: currentColors.text }]}>✓</Text>
-              )}
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.appearanceOption}
-              onPress={() => handleThemeChange('dark')}
-              activeOpacity={0.7}
-            >
-              <View style={styles.appearanceInfo}>
-                <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Dark</Text>
-                <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
-                  Always use dark mode
-                </Text>
-              </View>
-              {themeMode === 'dark' && (
-                <Text style={[styles.checkmark, { color: currentColors.text }]}>✓</Text>
-              )}
-            </TouchableOpacity>
-          </Card.Content>
-        </Card>
+              <TouchableOpacity
+                style={styles.appearanceOption}
+                onPress={() => handleThemeChange('system')}
+                activeOpacity={0.7}
+              >
+                <View style={styles.appearanceInfo}>
+                  <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>System</Text>
+                  <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
+                    Follow system settings
+                  </Text>
+                </View>
+                {themeMode === 'system' && (
+                  <Text style={[styles.checkmark, { color: currentColors.text }]}>✓</Text>
+                )}
+              </TouchableOpacity>
 
-        <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
-          <Card.Content>
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={[styles.settingLabel, { color: currentColors.text }]}>Notifications</Text>
-                <Text style={[styles.settingDescription, { color: currentColors.textSecondary }]}>Get reminders and updates</Text>
-              </View>
-              <Switch
-                value={notificationsEnabled}
-                onValueChange={setNotificationsEnabled}
-                trackColor={{
-                  false: '#D1D5DB',
-                  true: '#6B7280'
-                }}
-                thumbColor={notificationsEnabled ? '#FFFFFF' : '#FFFFFF'}
-              />
-            </View>
-          </Card.Content>
-        </Card>
+              <TouchableOpacity
+                style={styles.appearanceOption}
+                onPress={() => handleThemeChange('light')}
+                activeOpacity={0.7}
+              >
+                <View style={styles.appearanceInfo}>
+                  <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Light</Text>
+                  <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
+                    Always use light mode
+                  </Text>
+                </View>
+                {themeMode === 'light' && (
+                  <Text style={[styles.checkmark, { color: currentColors.text }]}>✓</Text>
+                )}
+              </TouchableOpacity>
 
-        <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
-          <Card.Content>
-            <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: currentColors.text }]}>Legal</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.appearanceOption}
-              onPress={handleTermsAndConditions}
-              activeOpacity={0.7}
-            >
-              <View style={styles.appearanceInfo}>
-                <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Terms & Conditions</Text>
-                <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
-                  Read our terms of service
-                </Text>
-              </View>
-              <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={[styles.appearanceOption, { borderBottomWidth: 0 }]}
-              onPress={handlePrivacyPolicy}
-              activeOpacity={0.7}
-            >
-              <View style={styles.appearanceInfo}>
-                <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Privacy Policy</Text>
-                <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
-                  Learn how we protect your data
-                </Text>
-              </View>
-              <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
-            </TouchableOpacity>
-          </Card.Content>
-        </Card>
+              <TouchableOpacity
+                style={styles.appearanceOption}
+                onPress={() => handleThemeChange('dark')}
+                activeOpacity={0.7}
+              >
+                <View style={styles.appearanceInfo}>
+                  <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Dark</Text>
+                  <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
+                    Always use dark mode
+                  </Text>
+                </View>
+                {themeMode === 'dark' && (
+                  <Text style={[styles.checkmark, { color: currentColors.text }]}>✓</Text>
+                )}
+              </TouchableOpacity>
+            </Card.Content>
+          </Card>
 
-        <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
-          <Card.Content>
-            <TouchableOpacity
-              style={[styles.settingRow, styles.dangerRow]}
-              onPress={handleClearData}
-              activeOpacity={0.7}
-            >
-              <View style={styles.settingInfo}>
-                <Text style={[styles.settingLabel, styles.dangerText, { color: currentColors.error }]}>Clear All Data</Text>
-                <Text style={[styles.settingDescription, { color: currentColors.textSecondary }]}>Delete all your information</Text>
+          <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
+            <Card.Content>
+              <View style={styles.settingRow}>
+                <View style={styles.settingInfo}>
+                  <Text style={[styles.settingLabel, { color: currentColors.text }]}>Notifications</Text>
+                  <Text style={[styles.settingDescription, { color: currentColors.textSecondary }]}>Get reminders and updates</Text>
+                </View>
+                <Switch
+                  value={notificationsEnabled}
+                  onValueChange={setNotificationsEnabled}
+                  trackColor={{
+                    false: '#D1D5DB',
+                    true: '#6B7280'
+                  }}
+                  thumbColor={notificationsEnabled ? '#FFFFFF' : '#FFFFFF'}
+                />
               </View>
-              <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
-            </TouchableOpacity>
-          </Card.Content>
-        </Card>
+            </Card.Content>
+          </Card>
 
-        <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
-          <Card.Content>
-            <View style={styles.aboutSection}>
-              <Text style={[styles.aboutTitle, { color: currentColors.text }]}>About Finsh</Text>
-              <Text style={[styles.aboutText, { color: currentColors.textSecondary }]}>Version 1.0.0</Text>
-              <Text style={[styles.aboutText, { color: currentColors.textSecondary }]}>
-                Helping you understand your paycheck and make smarter financial decisions.
+          {/* Share Feedback Section */}
+          <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
+            <Card.Content>
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.sectionTitle, { color: currentColors.text }]}>Share Feedback</Text>
+              </View>
+              <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary, marginBottom: spacing.sm }]}>
+                Have a suggestion or found a bug? Let us know!
               </Text>
-            </View>
-          </Card.Content>
-        </Card>
+              <TextInput
+                style={styles.feedbackInput}
+                placeholder="Type your feedback here. Thanks!"
+                placeholderTextColor={currentColors.textSecondary}
+                multiline
+                numberOfLines={4}
+                value={feedbackText}
+                onChangeText={setFeedbackText}
+              />
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleSendFeedback}
+                disabled={sendingFeedback}
+                activeOpacity={0.7}
+              >
+                {sendingFeedback ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.submitButtonText}>Submit Message</Text>
+                )}
+              </TouchableOpacity>
+            </Card.Content>
+          </Card>
 
-        <Text style={styles.copyright}>
-          © 2026 Sagar Sahu. All Rights Reserved.
-        </Text>
-      </ScrollView>
+          <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
+            <Card.Content>
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.sectionTitle, { color: currentColors.text }]}>Legal</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.appearanceOption}
+                onPress={handleTermsAndConditions}
+                activeOpacity={0.7}
+              >
+                <View style={styles.appearanceInfo}>
+                  <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Terms & Conditions</Text>
+                  <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
+                    Read our terms of service
+                  </Text>
+                </View>
+                <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.appearanceOption, { borderBottomWidth: 0 }]}
+                onPress={handlePrivacyPolicy}
+                activeOpacity={0.7}
+              >
+                <View style={styles.appearanceInfo}>
+                  <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Privacy Policy</Text>
+                  <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
+                    Learn how we protect your data
+                  </Text>
+                </View>
+                <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
+              </TouchableOpacity>
+            </Card.Content>
+          </Card>
+
+          <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
+            <Card.Content>
+              <TouchableOpacity
+                style={[styles.settingRow, styles.dangerRow]}
+                onPress={handleClearData}
+                activeOpacity={0.7}
+              >
+                <View style={styles.settingInfo}>
+                  <Text style={[styles.settingLabel, styles.dangerText, { color: currentColors.error }]}>Clear All Data</Text>
+                  <Text style={[styles.settingDescription, { color: currentColors.textSecondary }]}>Delete all your information</Text>
+                </View>
+                <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
+              </TouchableOpacity>
+            </Card.Content>
+          </Card>
+
+          <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
+            <Card.Content>
+              <View style={styles.aboutSection}>
+                <Text style={[styles.aboutTitle, { color: currentColors.text }]}>About Finsh</Text>
+                <Text style={[styles.aboutText, { color: currentColors.textSecondary }]}>Version 1.0.0</Text>
+                <Text style={[styles.aboutText, { color: currentColors.textSecondary }]}>
+                  Helping you understand your paycheck and make smarter financial decisions.
+                </Text>
+              </View>
+            </Card.Content>
+          </Card>
+
+          <Text style={styles.copyright}>
+            © 2026 Sagar Sahu. All Rights Reserved.
+          </Text>
+        </ScrollView>
+      </KeyboardAvoidingView>
+
       <SafeAreaView edges={['bottom']} style={styles.footerContainer}>
         <Footer
           navigation={navigation}
           onHomePress={onNavigateToHome}
-          onSettingsPress={() => {}} // Already on settings
+          onSettingsPress={() => { }} // Already on settings
         />
       </SafeAreaView>
     </SafeAreaView>

@@ -247,10 +247,10 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
     
     // Validate paycheck amount
     if (!payAmount || isNaN(payAmountNum) || payAmountNum < 0) {
-      setPayAmountError('Paycheck amount cannot be negative');
+      setPayAmountError('Please enter a valid amount');
       hasErrors = true;
     } else if (payAmountNum < 0.01) {
-      setPayAmountError('Please enter a valid amount (min. $0.01)');
+      setPayAmountError('Value must be at least $0.01');
       hasErrors = true;
     }
 
@@ -478,7 +478,7 @@ export function SalaryInfoScreen({ onNext, onBack, navigation }: SalaryInfoScree
               if (filteredText && (!isNaN(payAmountNum) && payAmountNum >= 0.01)) {
                 setPayAmountError('');
               } else if (filteredText && (isNaN(payAmountNum) || payAmountNum < 0.01)) {
-                setPayAmountError('Please enter a valid amount (min. $0.01)');
+                setPayAmountError('Value must be at least $0.01');
               } else {
                 setPayAmountError('');
               }
