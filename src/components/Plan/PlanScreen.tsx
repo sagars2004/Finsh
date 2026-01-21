@@ -787,11 +787,11 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
         {/* Tradeoff Comparisons */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Tradeoff Comparisons (This Month)</Text>
-          <Card style={styles.card}>
-            <Card.Content style={styles.cardContent}>
-              {tradeoffComparisons.map((comparison, index) => (
-                <View key={index}>
-                  <View style={styles.comparisonRow}>
+          <View style={{ gap: spacing.md }}>
+            {tradeoffComparisons.map((comparison, index) => (
+              <Card key={index} style={styles.card}>
+                <Card.Content style={styles.cardContent}>
+                  <View style={[styles.comparisonRow, { borderBottomWidth: 0, paddingVertical: 0 }]}>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.comparisonScenario}>{comparison.scenario}</Text>
                       {comparison.description && (
@@ -813,13 +813,10 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                       )}
                     </View>
                   </View>
-                  {index < tradeoffComparisons.length - 1 && (
-                    <View style={{ height: 1, backgroundColor: currentColors.borderLight, marginVertical: spacing.xs }} />
-                  )}
-                </View>
-              ))}
-            </Card.Content>
-          </Card>
+                </Card.Content>
+              </Card>
+            ))}
+          </View>
         </View>
 
         {/* Expense Accumulation */}

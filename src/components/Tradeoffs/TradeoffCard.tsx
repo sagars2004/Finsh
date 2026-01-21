@@ -37,7 +37,7 @@ export function TradeoffCard({ title, optionA, optionB, annualSalary = 50000 }: 
 
   const renderOptionCard = (option: TradeoffOption, type: 'A' | 'B') => {
     const isExpanded = expandedOption === type;
-    const isPositive = option.monthlyImpact >= 0;
+    const isPositive = option.monthlyImpact > 0;
     const scaledImpact = getScaledImpact(option.monthlyImpact);
 
     // Custom monochrome styling
@@ -56,7 +56,7 @@ export function TradeoffCard({ title, optionA, optionB, annualSalary = 50000 }: 
     };
 
     const colors = isDark ? darkModeColors[type] : lightModeColors[type];
-    const impactColor = isPositive ? (isOptionA && !isDark ? '#059669' : '#34D399') : (isOptionA && !isDark ? '#DC2626' : '#F87171');
+    const impactColor = isPositive ? (isOptionA && !isDark ? '#15936bff' : '#46eaaeff') : (isOptionA && !isDark ? '#e62a2aff' : '#ed6b6bff');
 
     return (
       <TouchableOpacity
@@ -123,7 +123,7 @@ export function TradeoffCard({ title, optionA, optionB, annualSalary = 50000 }: 
         {!isExpanded && (
           <View style={{ alignItems: 'center', marginTop: spacing.sm }}>
             <Text style={{ fontSize: 12, color: isDark ? '#fff' : 'rgba(0, 0, 0, 1)', fontWeight: '600' }}>
-              Tap for details
+              Tap for more details
             </Text>
           </View>
         )}

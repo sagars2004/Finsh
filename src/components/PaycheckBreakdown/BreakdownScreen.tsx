@@ -347,7 +347,7 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
               <Text style={styles.statValue}>Total: {formatCurrency(breakdown.benefits.total)}</Text>
             </View>
             <Text style={styles.sectionDescription}>
-              Estimated at 5% for Health and 3% for Retirement. You may edit these to match your actual paystub, and add any additional deductions if needed.
+              Estimated at 5% for health and 3% for retirement.
             </Text>
 
             <Card style={styles.card}>
