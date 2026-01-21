@@ -430,7 +430,7 @@ export function ContextScreen({ onNext, onBack, navigation }: ContextScreenProps
             marginBottom: spacing.xs,
             fontStyle: 'italic'
           }}>
-            (Don't sweat it—you can change these answers later!)
+            (Don't sweat it, you can always change these answers)
           </Text>
         </View>
 

@@ -422,5 +422,44 @@ export function getPlaceholderTradeoffs(): TradeoffCard[] {
         description: 'Save for 1-2 major trips annually',
       },
     },
+    {
+      id: 'income-1',
+      title: 'Income Strategy',
+      category: 'lifestyle',
+      optionA: {
+        title: 'Side Hustle',
+        pros: [
+          'Extra cash flow',
+          'Learn new skills',
+          'Diversified income',
+          'Accelerate savings',
+        ],
+        cons: [
+          'Less free time',
+          'Potential burnout',
+          'Tax complexity',
+          'Requires energy',
+        ],
+        monthlyImpact: 400,
+        description: 'Freelancing or gig work 5-10 hrs/week',
+      },
+      optionB: {
+        title: 'Focus on Primary Career',
+        pros: [
+          'Better work-life balance',
+          'Performance at main job',
+          'Time to recharge',
+          'Avoid burnout',
+        ],
+        cons: [
+          'Single income stream',
+          'Slower wealth building',
+          'Reliance on one employer',
+          'Less disposable income',
+        ],
+        monthlyImpact: 0,
+        description: 'Maximize performance at day job',
+      },
+    },
   ];
 }

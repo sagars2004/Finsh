@@ -27,8 +27,15 @@ export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenP
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const translateX = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(1)).current;
   const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+  // Interpolate opacity based on translation
+  // This ensures opacity is tied effectively to position and won't get "stuck"
+  const opacity = translateX.interpolate({
+    inputRange: [-SCREEN_WIDTH * 0.5, 0, SCREEN_WIDTH * 0.5],
+    outputRange: [0, 1, 0],
+    extrapolate: 'clamp',
+  });
 
   useEffect(() => {
     async function loadTradeoffs() {
@@ -53,38 +60,23 @@ export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenP
   // Animate card transition
   const animateCardTransition = (direction: 'next' | 'prev', newIndex: number) => {
     // Slide out current card
-    Animated.parallel([
+    Animated.timing(translateX, {
+      toValue: direction === 'next' ? -SCREEN_WIDTH : SCREEN_WIDTH,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => {
+      // Update index after slide out completes
+      setCurrentIndex(newIndex);
+
+      // Reset position for slide in (teleport to other side)
+      translateX.setValue(direction === 'next' ? SCREEN_WIDTH : -SCREEN_WIDTH);
+
+      // Slide in new card
       Animated.timing(translateX, {
-        toValue: direction === 'next' ? -SCREEN_WIDTH : SCREEN_WIDTH,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacity, {
         toValue: 0,
         duration: 250,
         useNativeDriver: true,
-      }),
-    ]).start(() => {
-      // Update index after slide out completes
-      setCurrentIndex(newIndex);
-      
-      // Reset position for slide in
-      translateX.setValue(direction === 'next' ? SCREEN_WIDTH : -SCREEN_WIDTH);
-      opacity.setValue(0);
-      
-      // Slide in new card
-      Animated.parallel([
-        Animated.timing(translateX, {
-          toValue: 0,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      }).start();
     });
   };
 
@@ -141,7 +133,6 @@ export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenP
   // Reset animation values when index changes externally
   useEffect(() => {
     translateX.setValue(0);
-    opacity.setValue(1);
   }, [currentIndex]);
 
   const cardStyle = {
@@ -318,11 +309,28 @@ export function TradeoffCardsScreen({ onBack, navigation }: TradeoffCardsScreenP
             showsVerticalScrollIndicator={false}
             scrollEnabled={true}
           >
+            <Text
+              style={{
+                ...typography.bodySmall,
+                color: currentColors.textSecondary,
+                textAlign: 'center',
+                marginBottom: spacing.lg,
+                paddingHorizontal: spacing.md,
+              }}
+            >
+              Swipe left/right or press the buttons to see how different choices can affect your wallet.
+              {'\n'}
+              <Text style={{ color: '#4ADE80', fontWeight: 'bold' }}>Green (+)</Text> adds to your monthly cash.
+              {'\n'}
+              <Text style={{ color: '#F87171', fontWeight: 'bold' }}>Red (-)</Text> takes away from your monthly cash.
+            </Text>
             <Animated.View style={cardStyle}>
               <TradeoffCard
+                key={currentIndex}
                 title={currentCard.title}
                 optionA={currentCard.optionA}
                 optionB={currentCard.optionB}
+                annualSalary={userData?.salary?.annualSalary}
               />
             </Animated.View>
             <View style={styles.navigationContainer}>

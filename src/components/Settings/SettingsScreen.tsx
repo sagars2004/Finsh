@@ -59,7 +59,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
   const handleClearData = () => {
     Alert.alert(
       'Clear All Data',
-      'This will delete all your information and reset the app. Are you sure?',
+      'This will delete all your information and reset the app. Are you sure you want to proceed?',
       [
         {
           text: 'Cancel',
@@ -153,7 +153,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
   const handleTermsAndConditions = () => {
     Alert.alert(
       'Terms & Conditions',
-      'Terms & Conditions content will be displayed here. This feature will be available soon.',
+      'Terms & Conditions content will be displayed here. This feature will be available soon. In the meantime, you may view this in the App Store.',
       [{ text: 'OK' }]
     );
   };
@@ -161,7 +161,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
   const handlePrivacyPolicy = () => {
     Alert.alert(
       'Privacy Policy',
-      'Privacy Policy content will be displayed here. This feature will be available soon.',
+      'Privacy Policy content will be displayed here. This feature will be available soon. In the meantime, you may view this in the App Store.',
       [{ text: 'OK' }]
     );
   };
