@@ -144,7 +144,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
       padding: spacing.md,
       borderBottomWidth: 1,
       borderBottomColor: currentColors.borderLight,
-      backgroundColor: currentColors.surface,
+      backgroundColor: currentColors.background,
     },
     backButton: {
       padding: spacing.sm,
@@ -819,17 +819,17 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
           </View>
         </View>
 
-        {/* Expense Accumulation */}
+        {/* Projected Savings */}
         {expenseAccumulation.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Expense Accumulation (12 Months)</Text>
+            <Text style={styles.sectionTitle}>Projected Savings (12 Months)</Text>
             <Card style={styles.card}>
               <Card.Content style={styles.cardContent}>
                 {expenseAccumulation.slice(0, 12).map((expense, index) => (
                   <View key={index} style={styles.expenseRow}>
                     <Text style={styles.expenseLabel}>{expense.monthName}</Text>
                     <View style={{ alignItems: 'flex-end' }}>
-                      <Text style={[styles.expenseValue, { color: '#FF9800' }]}>
+                      <Text style={[styles.expenseValue, { color: '#10B981' }]}>
                         {formatCurrency(expense.remainingBalance)}
                       </Text>
                       <Text style={[styles.chartLabel, { marginTop: spacing.xs }]}>

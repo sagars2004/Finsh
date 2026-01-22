@@ -90,6 +90,8 @@ export function TutorialScreen({ navigation }: TutorialScreenProps) {
     stepContainer: {
       backgroundColor: currentColors.surface,
       borderRadius: 16,
+      borderColor: currentColors.borderLight,
+      borderWidth: 2,
       padding: spacing.lg,
       marginBottom: spacing.md,
       shadowColor: '#000',

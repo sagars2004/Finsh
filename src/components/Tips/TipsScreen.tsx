@@ -25,7 +25,7 @@ export function TipsScreen({ onBack, navigation }: TipsScreenProps) {
             padding: spacing.md,
             borderBottomWidth: 1,
             borderBottomColor: currentColors.borderLight,
-            backgroundColor: currentColors.surface,
+            backgroundColor: currentColors.background,
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -50,7 +50,7 @@ export function TipsScreen({ onBack, navigation }: TipsScreenProps) {
         headlineContainer: {
             marginBottom: spacing.lg,
             padding: spacing.md,
-            backgroundColor: isDark ? '#333333' : currentColors.textSecondary, // Dark Grey
+            backgroundColor: currentColors.textSecondary, // Dark Grey
             borderRadius: 16,
             borderWidth: 1,
             borderColor: '#444444',
@@ -59,7 +59,7 @@ export function TipsScreen({ onBack, navigation }: TipsScreenProps) {
             ...typography.body,
             fontSize: 16,
             lineHeight: 24,
-            color: '#FFFFFF', // White text for dark BG
+            color: isDark ? '#000' : '#FFFFFF', // White text for dark BG
             fontStyle: 'italic',
             textAlign: 'center',
         },
@@ -67,8 +67,8 @@ export function TipsScreen({ onBack, navigation }: TipsScreenProps) {
             marginBottom: spacing.lg,
             backgroundColor: currentColors.surface, // Light Grey for both modes
             borderRadius: 27,
-            borderWidth: 1,
-            borderColor: 'rgba(0, 0, 0, 0.05)',
+            borderWidth: 3,
+            borderColor: currentColors.borderLight,
             // Shadow
             shadowColor: "#000",
             shadowOffset: {

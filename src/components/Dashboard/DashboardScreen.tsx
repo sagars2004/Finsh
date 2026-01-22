@@ -31,7 +31,7 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
     ? userData.salary.payPeriodsPerYear
       ? `${userData.salary.payPeriodsPerYear} times per year`
       : userData.salary.payFrequency.charAt(0).toUpperCase() +
-        userData.salary.payFrequency.slice(1).replace(/([A-Z])/g, ' $1')
+      userData.salary.payFrequency.slice(1).replace(/([A-Z])/g, ' $1')
     : 'paycheck';
 
   const styles = StyleSheet.create({
@@ -102,7 +102,7 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
           breakdown={paycheckData}
           payFrequency={payFrequencyLabel}
         />
-        
+
         <ActionButtons
           onViewBreakdown={onViewBreakdown}
           onViewTradeoffs={onViewTradeoffs}
@@ -110,12 +110,12 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
         <View style={styles.infoBox}>
           <View style={styles.infoBoxContent}>
             <Text style={styles.infoText}>
-              Don't forget! Select the Plan tab below to view more insights and plan your long-term future.
+              Don't forget! Click the Plan and Tips icons below to view more insights and plan your long-term future.
             </Text>
           </View>
         </View>
       </ScrollView>
-      
+
       <SafeAreaView edges={['bottom']} style={styles.footerContainer}>
         <Footer navigation={navigation} />
       </SafeAreaView>

@@ -247,6 +247,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
     scrollContent: {
       flexGrow: 1,
       padding: spacing.lg,
+      paddingBottom: 100, // Ensure content isn't hidden behind buttons
     },
     introContainer: {
       flex: 1,
@@ -347,8 +348,10 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
     },
     buttonContainer: {
       paddingVertical: spacing.lg,
+      paddingHorizontal: spacing.lg,
       flexDirection: 'row',
       gap: spacing.md,
+      backgroundColor: 'transparent', // Ensure it overlays correctly
     },
     button: {
       flex: 1,
@@ -364,10 +367,11 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
   });
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
       >
         <View style={styles.content}>
           {/* Bubble particles background */}
@@ -460,36 +464,36 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
             </View>
 
             <Text style={styles.subtitle}>
-              Keep your paycheck swimming in the right direction. Let's dive right in!
+              Keep your paycheck swimming in the right direction. Let's dive in!
             </Text>
           </Animated.View>
         </View>
-
-        <View style={styles.buttonContainer}>
-          <Button
-            mode="contained"
-            onPress={handleGetStarted}
-            buttonColor={isDark ? '#E5E5E5' : '#000000'}
-            textColor={isDark ? '#000000' : '#FFFFFF'}
-            style={styles.button}
-            contentStyle={styles.buttonContent}
-            labelStyle={styles.buttonLabel}
-          >
-            Get Started
-          </Button>
-          <Button
-            mode="outlined"
-            onPress={() => navigation?.navigate('Tutorial')}
-            buttonColor="transparent"
-            textColor={isDark ? '#E5E5E5' : '#000000'}
-            style={[styles.button, { borderColor: isDark ? '#E5E5E5' : '#000000', borderWidth: 2 }]}
-            contentStyle={styles.buttonContent}
-            labelStyle={styles.buttonLabel}
-          >
-            Learn More
-          </Button>
-        </View>
       </ScrollView>
+
+      <View style={styles.buttonContainer}>
+        <Button
+          mode="contained"
+          onPress={handleGetStarted}
+          buttonColor={isDark ? '#E5E5E5' : '#000000'}
+          textColor={isDark ? '#000000' : '#FFFFFF'}
+          style={styles.button}
+          contentStyle={styles.buttonContent}
+          labelStyle={styles.buttonLabel}
+        >
+          Get Started
+        </Button>
+        <Button
+          mode="outlined"
+          onPress={() => navigation?.navigate('Tutorial')}
+          buttonColor="transparent"
+          textColor={isDark ? '#E5E5E5' : '#000000'}
+          style={[styles.button, { borderColor: isDark ? '#E5E5E5' : '#000000', borderWidth: 2 }]}
+          contentStyle={styles.buttonContent}
+          labelStyle={styles.buttonLabel}
+        >
+          Learn More
+        </Button>
+      </View>
     </SafeAreaView>
   );
 }

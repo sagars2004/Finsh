@@ -179,7 +179,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
       padding: spacing.md,
       borderBottomWidth: 1,
       borderBottomColor: currentColors.borderLight,
-      backgroundColor: currentColors.surface,
+      backgroundColor: currentColors.background,
     },
     backButton: {
       padding: spacing.sm,
@@ -294,7 +294,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
       ...typography.body,
     },
     submitButton: {
-      backgroundColor: isDark ? '#ffffff4b' : '#707070ff',
+      backgroundColor: isDark ? '#ffffff2e' : '#d9d9d9ff',
       padding: spacing.sm,
       borderRadius: 16,
       alignItems: 'center',
@@ -313,7 +313,7 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
     },
     copyright: {
       ...typography.caption,
-      color: '#FFFFFF',
+      color: isDark ? '#FFFFFF' : '#000',
       textAlign: 'center',
       fontSize: 11,
       marginTop: spacing.lg,
@@ -505,6 +505,17 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
                 </View>
                 <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
               </TouchableOpacity>
+            </Card.Content>
+          </Card>
+
+          <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
+            <Card.Content>
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.aboutTitle, { color: currentColors.text }]}>Data Transparency</Text>
+                <Text style={[styles.aboutText, { color: currentColors.textSecondary }]}>
+                  We value your privacy and are committed to protecting your personal information. We do not collect or store your information, and none of your data leaves the app.
+                </Text>
+              </View>
             </Card.Content>
           </Card>
 
