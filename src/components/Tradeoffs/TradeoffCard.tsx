@@ -45,14 +45,14 @@ export function TradeoffCard({ title, optionA, optionB, annualSalary = 50000 }: 
 
     // Light Mode Colors
     const lightModeColors = {
-      A: { bg: '#F3F4F6', border: '#1F2937', text: '#111827', textSec: '#111827', badgeBg: 'rgba(221, 218, 218, 0.6)' },
-      B: { bg: '#F3F4F6', border: '#1F2937', text: '#111827', textSec: '#111827', badgeBg: 'rgba(221, 218, 218, 0.6)' }
+      A: { bg: currentColors.surface, border: '#1F2937', text: '#111827', textSec: '#111827', badgeBg: 'rgba(221, 218, 218, 0.6)' },
+      B: { bg: currentColors.surface, border: '#1F2937', text: '#111827', textSec: '#111827', badgeBg: 'rgba(221, 218, 218, 0.6)' }
     };
 
     // Dark Mode Colors
     const darkModeColors = {
-      A: { bg: '#8b939fd4', border: '#ffffffff', text: '#f3f7fcff', textSec: '#D1D5DB', badgeBg: 'rgba(32, 32, 32, 0.29)' },
-      B: { bg: '#8b939fd4', border: '#ffffffff', text: '#f3f7fcff', textSec: '#D1D5DB', badgeBg: 'rgba(32, 32, 32, 0.29)' }
+      A: { bg: currentColors.surface, border: '#ffffffff', text: '#f3f7fcff', textSec: '#D1D5DB', badgeBg: 'rgba(32, 32, 32, 0.29)' },
+      B: { bg: currentColors.surface, border: '#ffffffff', text: '#f3f7fcff', textSec: '#D1D5DB', badgeBg: 'rgba(32, 32, 32, 0.29)' }
     };
 
     const colors = isDark ? darkModeColors[type] : lightModeColors[type];

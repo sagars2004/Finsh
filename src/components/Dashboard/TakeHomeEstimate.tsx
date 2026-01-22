@@ -21,7 +21,7 @@ export function TakeHomeEstimate({ breakdown, payFrequency }: TakeHomeEstimatePr
       marginBottom: spacing.lg,
       backgroundColor: currentColors.surface,
       borderWidth: 4,
-      borderColor: '#E5E5E5',
+      borderColor: currentColors.borderLight,
       borderRadius: 16,
     },
     cardContent: {
@@ -68,10 +68,18 @@ export function TakeHomeEstimate({ breakdown, payFrequency }: TakeHomeEstimatePr
       paddingTop: spacing.md,
       borderTopWidth: 1,
       borderTopColor: currentColors.borderLight,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 4,
+      },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      elevation: 3,
     },
     note: {
       ...typography.caption,
-      color: currentColors.textTertiary,
+      color: currentColors.textSecondary,
       fontStyle: 'italic',
       lineHeight: 18,
     },

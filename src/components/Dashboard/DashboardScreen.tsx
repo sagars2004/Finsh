@@ -57,9 +57,9 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
     },
     infoBox: {
       marginTop: spacing.lg,
-      backgroundColor: '#4A4A4A',
+      backgroundColor: currentColors.surface,
       borderRadius: 12,
-      borderWidth: 1,
+      borderWidth: 3,
       borderColor: currentColors.borderLight,
       shadowColor: '#000',
       shadowOffset: {
@@ -75,7 +75,7 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
     },
     infoText: {
       ...typography.body,
-      color: '#FFFFFF',
+      color: currentColors.textSecondary,
       lineHeight: 20,
       textAlign: 'center',
     },

@@ -409,7 +409,7 @@ export function ContextScreen({ onNext, onBack, navigation }: ContextScreenProps
               marginTop: spacing.sm,
               marginBottom: spacing.lg,
               padding: spacing.md,
-              backgroundColor: isDark ? '#3a3a3aff' : '#e8e8e8ff',
+              backgroundColor: currentColors.surface,
               borderRadius: 12,
               borderLeftWidth: 4,
               borderLeftColor: '#626262ff'

@@ -21,7 +21,7 @@ module.exports = {
     ios: {
       supportsTablet: false,
       bundleIdentifier: 'com.finsh.app',
-      buildNumber: '1',
+      buildNumber: '3',
       infoPlist: {
         UIRequiresFullScreen: true,
         NSLocationWhenInUseUsageDescription: 'Finsh uses your location to automatically fill in your city and state for accurate tax calculations.',

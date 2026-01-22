@@ -21,10 +21,12 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
     button: {
       width: '100%',
       borderRadius: 24,
+      borderWidth: 3,
+      borderColor: currentColors.borderLight,
       shadowColor: '#000',
       shadowOffset: {
         width: 0,
-        height: 2,
+        height: 4,
       },
       shadowOpacity: 0.15,
       shadowRadius: 4,
@@ -53,8 +55,8 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
       <Button
         mode="contained"
         onPress={onViewBreakdown}
-        buttonColor={currentColors.textSecondary}
-        textColor={isDark ? '#000000' : '#FFFFFF'}
+        buttonColor={currentColors.surface}
+        textColor={isDark ? '#FFF' : '#000'}
         style={styles.button}
         contentStyle={styles.buttonContent}
         labelStyle={styles.buttonLabel}
@@ -65,8 +67,8 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
       <Button
         mode="contained"
         onPress={onViewTradeoffs}
-        buttonColor={currentColors.textSecondary}
-        textColor={isDark ? '#000000' : '#FFFFFF'}
+        buttonColor={currentColors.surface}
+        textColor={isDark ? '#FFF' : '#000'}
         style={styles.button}
         contentStyle={styles.buttonContent}
         labelStyle={styles.buttonLabel}
