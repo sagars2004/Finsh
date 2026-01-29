@@ -115,22 +115,6 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
     }
   };
 
-  const handleTermsAndConditions = () => {
-    Alert.alert(
-      'Terms & Conditions',
-      'Terms & Conditions content will be displayed here. This feature will be available soon. In the meantime, you may view this in the App Store.',
-      [{ text: 'OK' }]
-    );
-  };
-
-  const handlePrivacyPolicy = () => {
-    Alert.alert(
-      'Privacy Policy',
-      'Privacy Policy content will be displayed here. This feature will be available soon. In the meantime, you may view this in the App Store.',
-      [{ text: 'OK' }]
-    );
-  };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -424,33 +408,19 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
           </Card>
 
           <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
-            <Card.Content>
-              <View style={styles.sectionHeader}>
+            <Card.Content style={{ paddingVertical: spacing.sm }}>
+              <View style={[styles.sectionHeader, { marginBottom: spacing.xs }]}>
                 <Text style={[styles.sectionTitle, { color: currentColors.text }]}>Legal</Text>
               </View>
               <TouchableOpacity
-                style={styles.appearanceOption}
-                onPress={handleTermsAndConditions}
-                activeOpacity={0.7}
-              >
-                <View style={styles.appearanceInfo}>
-                  <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Terms & Conditions</Text>
-                  <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
-                    Read our terms of service
-                  </Text>
-                </View>
-                <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.appearanceOption, { borderBottomWidth: 0 }]}
-                onPress={handlePrivacyPolicy}
+                style={[styles.appearanceOption, { borderBottomWidth: 0, paddingVertical: spacing.sm }]}
+                onPress={() => Linking.openURL('https://sagars2004.github.io/Finsh/')}
                 activeOpacity={0.7}
               >
                 <View style={styles.appearanceInfo}>
                   <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Privacy Policy</Text>
                   <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
-                    Learn how we protect your data
+                    Tap to view this document in your browser
                   </Text>
                 </View>
                 <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>

@@ -57,36 +57,38 @@ export function ConfirmationScreen({ onComplete, onBack, navigation }: Confirmat
     },
     scrollContent: {
       flexGrow: 1,
-      padding: spacing.lg,
+      padding: spacing.md, // Reduced from lg
+      justifyContent: 'center',
     },
     content: {
       flex: 1,
+      justifyContent: 'center',
     },
     logoContainer: {
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: spacing.xl,
+      marginBottom: spacing.md, // Reduced from xl
       width: '100%',
     },
     logo: {
-      width: 120,
-      height: 120,
+      width: 100, // Reduced from 120
+      height: 100, // Reduced from 120
       alignSelf: 'center',
     },
     title: {
       ...typography.h2,
       color: currentColors.text,
       textAlign: 'center',
-      marginBottom: spacing.sm,
+      marginBottom: spacing.xs, // Reduced from sm
     },
     subtitle: {
       ...typography.body,
       color: currentColors.textSecondary,
       textAlign: 'center',
-      marginBottom: spacing.xl,
+      marginBottom: spacing.lg, // Reduced from xl
     },
     summaryCard: {
-      marginBottom: spacing.xl,
+      marginBottom: spacing.lg, // Reduced from xl
       backgroundColor: currentColors.surface,
     },
     summaryRow: {
@@ -114,7 +116,7 @@ export function ConfirmationScreen({ onComplete, onBack, navigation }: Confirmat
     buttonContainer: {
       flexDirection: 'row',
       gap: spacing.md,
-      paddingVertical: spacing.lg,
+      paddingVertical: spacing.md, // Reduced from lg
     },
     backButton: {
       flex: 1,
@@ -140,6 +142,7 @@ export function ConfirmationScreen({ onComplete, onBack, navigation }: Confirmat
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
       >
         <View style={styles.content}>
           <View style={styles.logoContainer}>

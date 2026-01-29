@@ -40,7 +40,9 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
       backgroundColor: currentColors.background,
     },
     scrollContent: {
-      padding: spacing.lg,
+      padding: spacing.md, // Reduced from lg
+      flexGrow: 1,
+      justifyContent: 'center', // Center content vertically
     },
     errorContainer: {
       flex: 1,
@@ -56,7 +58,7 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
       backgroundColor: currentColors.surface,
     },
     infoBox: {
-      marginTop: spacing.lg,
+      marginTop: spacing.md, // Reduced from lg
       backgroundColor: currentColors.surface,
       borderRadius: 12,
       borderWidth: 3,
@@ -71,13 +73,14 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
       elevation: 2,
     },
     infoBoxContent: {
-      padding: spacing.md,
+      padding: spacing.sm, // Reduced from md
     },
     infoText: {
       ...typography.body,
       color: currentColors.textSecondary,
-      lineHeight: 20,
+      lineHeight: 24,
       textAlign: 'center',
+      fontSize: 16, // Ensure it fits
     },
   });
 
@@ -96,6 +99,7 @@ export function DashboardScreen({ onViewTradeoffs, onViewBreakdown, navigation }
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
       >
         <Greeting name={userData.name} />
         <TakeHomeEstimate

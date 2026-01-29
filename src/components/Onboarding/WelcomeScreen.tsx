@@ -247,7 +247,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
     scrollContent: {
       flexGrow: 1,
       padding: spacing.lg,
-      paddingBottom: 100, // Ensure content isn't hidden behind buttons
+      paddingBottom: spacing.md, // Reduced padding
     },
     introContainer: {
       flex: 1,
@@ -259,7 +259,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingVertical: spacing.xxl,
+      paddingVertical: spacing.lg, // Reduced from xxL
     },
     bubbleContainer: {
       position: 'absolute',
@@ -276,24 +276,24 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
       opacity: 0.4, // Lighter opacity for subtle effect
     },
     logoContainer: {
-      marginBottom: spacing.xl,
+      marginBottom: spacing.md, // Reduced from xl
       alignItems: 'center',
       justifyContent: 'center',
       alignSelf: 'center',
       width: '100%',
       zIndex: 10, // Ensure logo is above bubbles
-      minHeight: 150, // Ensure container always has space
+      minHeight: 120, // Reduced from 150
     },
     logoWrapper: {
-      width: 150,
-      height: 150,
+      width: 120, // Reduced from 150
+      height: 120, // Reduced from 150
       alignItems: 'center',
       justifyContent: 'center',
       position: 'relative', // Ensure wrapper maintains space
     },
     logo: {
-      width: 150,
-      height: 150,
+      width: 120, // Reduced from 150
+      height: 120, // Reduced from 150
       alignSelf: 'center',
       position: 'absolute', // Ensure logo always renders
     },
@@ -305,14 +305,14 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
       ...typography.h1,
       color: currentColors.text,
       textAlign: 'center',
-      marginBottom: spacing.md,
+      marginBottom: spacing.md, // Increased spacing as requested
       fontWeight: '800',
     },
     subtitle: {
       ...typography.bodyLarge,
       color: currentColors.textSecondary,
       textAlign: 'center',
-      marginBottom: spacing.xl,
+      marginBottom: spacing.md,
       paddingHorizontal: spacing.md,
       lineHeight: 28,
       fontWeight: '500',
@@ -322,7 +322,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
       justifyContent: 'space-between',
       width: '100%',
       paddingHorizontal: spacing.md,
-      marginBottom: spacing.xl,
+      marginBottom: spacing.lg,
       marginTop: spacing.md,
     },
     feature: {
@@ -336,7 +336,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
       marginTop: spacing.sm,
       textAlign: 'center',
       fontWeight: '600',
-      fontSize: 16,
+      fontSize: 14, // Slightly smaller to ensure fit with 2 lines
     },
     description: {
       ...typography.body,
@@ -347,11 +347,11 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
       marginTop: spacing.sm,
     },
     buttonContainer: {
-      paddingVertical: spacing.lg,
+      paddingVertical: spacing.md,
       paddingHorizontal: spacing.lg,
       flexDirection: 'row',
       gap: spacing.md,
-      backgroundColor: 'transparent', // Ensure it overlays correctly
+      backgroundColor: 'transparent',
     },
     button: {
       flex: 1,
@@ -384,7 +384,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
                   {
                     width: bubble.size,
                     height: bubble.size,
-                    backgroundColor: isDark ? 'rgba(200, 200, 200, 0.5)' : 'rgba(80, 80, 80, 0.5)', // Darker grey in both modes
+                    backgroundColor: isDark ? 'rgba(200, 200, 200, 0.5)' : 'rgba(80, 80, 80, 0.5)',
                     top: bubble.startY,
                     transform: [
                       {
@@ -404,7 +404,7 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
                 transform: [{ translateY }],
               },
             ]}
-            key={`logo-${isDark}`} // Force re-render on theme change
+            key={`logo-${isDark}`}
           >
             <View style={styles.logoWrapper}>
               <Image
@@ -413,9 +413,6 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
                 resizeMode="contain"
                 onError={(error) => {
                   console.error('Logo image failed to load:', error.nativeEvent);
-                }}
-                onLoad={() => {
-                  // Ensure logo is visible after load
                 }}
               />
             </View>
@@ -443,7 +440,9 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
                   size={32}
                   color={isDark ? '#FFFFFF' : '#000000'}
                 />
-                <Text style={styles.featureText}>Paycheck Breakdown</Text>
+                <Text style={styles.featureText}>
+                  Paycheck{'\n'}Breakdown
+                </Text>
               </View>
               <View style={styles.feature}>
                 <MaterialCommunityIcons
@@ -451,7 +450,9 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
                   size={32}
                   color={isDark ? '#FFFFFF' : '#000000'}
                 />
-                <Text style={styles.featureText}>Smart Trade-offs</Text>
+                <Text style={styles.featureText}>
+                  Smart{'\n'}Trade-offs
+                </Text>
               </View>
               <View style={styles.feature}>
                 <MaterialCommunityIcons
@@ -459,7 +460,9 @@ export function WelcomeScreen({ onNext, navigation }: WelcomeScreenProps) {
                   size={32}
                   color={isDark ? '#FFFFFF' : '#000000'}
                 />
-                <Text style={styles.featureText}>Planning Insight</Text>
+                <Text style={styles.featureText}>
+                  Planning{'\n'}Insight
+                </Text>
               </View>
             </View>
 

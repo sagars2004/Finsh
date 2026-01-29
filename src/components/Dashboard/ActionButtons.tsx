@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { Button } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
@@ -16,7 +16,7 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
 
   const styles = StyleSheet.create({
     container: {
-      gap: spacing.md,
+      gap: spacing.sm,
     },
     button: {
       width: '100%',
@@ -59,10 +59,15 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
         textColor={isDark ? '#FFF' : '#000'}
         style={styles.button}
         contentStyle={styles.buttonContent}
-        labelStyle={styles.buttonLabel}
         icon={({ color }) => <BreakdownIcon color={color} />}
       >
-        View Paycheck Breakdown
+        <Text
+          style={[styles.buttonLabel, { color: isDark ? '#FFF' : '#000' }]}
+          adjustsFontSizeToFit
+          numberOfLines={1}
+        >
+          View Paycheck Breakdown
+        </Text>
       </Button>
       <Button
         mode="contained"
@@ -71,10 +76,15 @@ export function ActionButtons({ onViewTradeoffs, onViewBreakdown }: ActionButton
         textColor={isDark ? '#FFF' : '#000'}
         style={styles.button}
         contentStyle={styles.buttonContent}
-        labelStyle={styles.buttonLabel}
         icon={({ color }) => <TradeoffIcon color={color} />}
       >
-        View Tradeoff Cards
+        <Text
+          style={[styles.buttonLabel, { color: isDark ? '#FFF' : '#000' }]}
+          adjustsFontSizeToFit
+          numberOfLines={1}
+        >
+          View Tradeoff Cards
+        </Text>
       </Button>
     </View>
   );

@@ -234,7 +234,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
       backgroundColor: currentColors.surface,
     },
     cardContent: {
-      padding: spacing.md,
+      padding: spacing.sm,
     },
     controlsRow: {
       flexDirection: 'row',
@@ -495,8 +495,8 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
           <Card style={styles.card}>
             <Card.Content style={styles.cardContent}>
               {expenses.map((expense, index) => (
-                <View key={expense.id} style={{ marginBottom: index < expenses.length - 1 ? spacing.md : 0 }}>
-                  <View style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
+                <View key={expense.id} style={{ marginBottom: index < expenses.length - 1 ? spacing.xs : 0 }}>
+                  <View style={{ flexDirection: 'row', gap: spacing.xs, alignItems: 'flex-start' }}>
                     <View style={{ flex: 1 }}>
                       <TextInput
                         label="Expense Name"
@@ -510,10 +510,15 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                           setExpenses(updated);
                         }}
                         dense
-                        style={{ marginBottom: 0 }}
+                        multiline={false}
+                        numberOfLines={1}
+                        style={{ marginBottom: 0, fontSize: 13, height: 40 }}
+                        contentStyle={{ paddingVertical: 0 }}
+                        textColor={currentColors.text}
+                        theme={{ colors: { onSurfaceVariant: currentColors.textSecondary } }}
                       />
                     </View>
-                    <View style={{ flex: 1 }}>
+                    <View style={{ width: 125 }}>
                       <TextInput
                         label="Amount"
                         mode="outlined"
@@ -521,14 +526,21 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                         value={expense.amount}
                         onChangeText={(text) => {
                           const filteredText = text.replace(/[^0-9.]/g, '');
+                          if (filteredText && parseFloat(filteredText) > 1000000) {
+                            return; // Prevent entering value > 1,000,000
+                          }
                           const updated = expenses.map(e =>
                             e.id === expense.id ? { ...e, amount: filteredText } : e
                           );
                           setExpenses(updated);
                         }}
-                        left={<TextInput.Affix text="$" />}
+                        left={<TextInput.Affix text="$" textStyle={{ fontSize: 13 }} />}
                         dense
-                        style={{ marginBottom: 0 }}
+                        multiline={false}
+                        numberOfLines={1}
+                        style={{ marginBottom: 0, fontSize: 13, height: 40 }}
+                        contentStyle={{ paddingVertical: 0 }}
+                        textColor={currentColors.text}
                       />
                     </View>
                     {expenses.length > 1 && (
@@ -850,7 +862,7 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                 </Text>
               </View>
 
-              <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md }}>
+              <View style={{ flexDirection: 'row', gap: spacing.xs, marginBottom: spacing.xs }}>
                 <View style={{ flex: 1 }}>
                   <TextInput
                     label="Goal Name"
@@ -859,21 +871,31 @@ export function PlanScreen({ onBack, onNavigateToHome, onNavigateToSettings, nav
                     value={goalName}
                     onChangeText={setGoalName}
                     dense
-                    style={{ marginBottom: 0 }}
+                    multiline={false}
+                    numberOfLines={1}
+                    style={{ marginBottom: 0, fontSize: 13, height: 40 }}
+                    contentStyle={{ paddingVertical: 0 }}
                     textColor={currentColors.text}
                     theme={{ colors: { onSurfaceVariant: currentColors.textSecondary } }}
                   />
                 </View>
-                <View style={{ flex: 1 }}>
+                <View style={{ width: 125 }}>
                   <TextInput
                     label="Amount"
                     mode="outlined"
                     keyboardType="numeric"
                     value={goalAmount}
-                    onChangeText={(text) => setGoalAmount(text.replace(/[^0-9.]/g, ''))}
-                    left={<TextInput.Affix text="$" />}
+                    onChangeText={(text) => {
+                      const filtered = text.replace(/[^0-9.]/g, '');
+                      if (filtered && parseFloat(filtered) > 1000000) return;
+                      setGoalAmount(filtered);
+                    }}
+                    left={<TextInput.Affix text="$" textStyle={{ fontSize: 13 }} />}
                     dense
-                    style={{ marginBottom: 0 }}
+                    multiline={false}
+                    numberOfLines={1}
+                    style={{ marginBottom: 0, fontSize: 13, height: 40 }}
+                    contentStyle={{ paddingVertical: 0 }}
                     textColor={currentColors.text}
                     theme={{ colors: { onSurfaceVariant: currentColors.textSecondary } }}
                   />

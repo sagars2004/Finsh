@@ -198,7 +198,7 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
       backgroundColor: currentColors.surface,
     },
     cardContent: {
-      padding: spacing.md,
+      padding: spacing.sm,
     },
     inputCard: {
       marginBottom: spacing.sm,
@@ -288,7 +288,14 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Full Breakdown</Text>
+        <Text
+          style={[styles.title, { flex: 1, textAlign: 'center' }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.8}
+        >
+          Full Breakdown
+        </Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -353,8 +360,8 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
             <Card style={styles.card}>
               <Card.Content style={styles.cardContent}>
                 {benefitsList.map((benefit, index) => (
-                  <View key={benefit.id} style={{ marginBottom: index < benefitsList.length - 1 ? spacing.md : 0 }}>
-                    <View style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
+                  <View key={benefit.id} style={{ marginBottom: index < benefitsList.length - 1 ? spacing.xs : 0 }}>
+                    <View style={{ flexDirection: 'row', gap: spacing.xs, alignItems: 'flex-start' }}>
                       <View style={{ flex: 1 }}>
                         <TextInput
                           label="Benefit Name"
@@ -365,12 +372,13 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
                           dense
                           multiline={false}
                           numberOfLines={1}
-                          style={{ marginBottom: 0 }}
+                          style={{ marginBottom: 0, fontSize: 13, height: 40 }}
+                          contentStyle={{ paddingVertical: 0 }}
                           textColor={currentColors.text}
                           theme={{ colors: { onSurfaceVariant: currentColors.textSecondary } }}
                         />
                       </View>
-                      <View style={{ flex: 1 }}>
+                      <View style={{ width: 125 }}>
                         <TextInput
                           label="Amount"
                           mode="outlined"
@@ -380,9 +388,12 @@ export function BreakdownScreen({ onBack, navigation }: BreakdownScreenProps) {
                             const filteredText = text.replace(/[^0-9.]/g, '');
                             handleUpdateBenefit(benefit.id, 'amount', filteredText);
                           }}
-                          left={<TextInput.Affix text="$" />}
+                          left={<TextInput.Affix text="$" textStyle={{ fontSize: 13 }} />}
                           dense
-                          style={{ marginBottom: 0 }}
+                          multiline={false}
+                          numberOfLines={1}
+                          style={{ marginBottom: 0, fontSize: 13, height: 40 }}
+                          contentStyle={{ paddingVertical: 0 }}
                           textColor={currentColors.text}
                         />
                       </View>

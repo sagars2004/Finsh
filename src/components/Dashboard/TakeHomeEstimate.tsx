@@ -18,7 +18,7 @@ export function TakeHomeEstimate({ breakdown, payFrequency }: TakeHomeEstimatePr
 
   const styles = StyleSheet.create({
     card: {
-      marginBottom: spacing.lg,
+      marginBottom: spacing.md,
       backgroundColor: currentColors.surface,
       borderWidth: 4,
       borderColor: currentColors.borderLight,
@@ -97,7 +97,7 @@ export function TakeHomeEstimate({ breakdown, payFrequency }: TakeHomeEstimatePr
         </View>
         <Text style={styles.amount}>{formatCurrency(takeHomePay)}</Text>
         <Text style={styles.frequency}>
-          {payFrequency.includes('times per year') 
+          {payFrequency.includes('times per year')
             ? `Per paycheck`
             : `Per ${payFrequency.toLowerCase()} paycheck`}
         </Text>
