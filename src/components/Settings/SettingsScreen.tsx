@@ -410,17 +410,46 @@ export function SettingsScreen({ onBack, onNavigateToHome, navigation }: Setting
           <Card style={[styles.card, { backgroundColor: currentColors.surface }]}>
             <Card.Content style={{ paddingVertical: spacing.sm }}>
               <View style={[styles.sectionHeader, { marginBottom: spacing.xs }]}>
-                <Text style={[styles.sectionTitle, { color: currentColors.text }]}>Legal</Text>
+                <Text style={[styles.sectionTitle, { color: currentColors.text }]}>Legal & Resources</Text>
               </View>
+
               <TouchableOpacity
-                style={[styles.appearanceOption, { borderBottomWidth: 0, paddingVertical: spacing.sm }]}
-                onPress={() => Linking.openURL('https://sagars2004.github.io/Finsh/')}
+                style={styles.appearanceOption}
+                onPress={() => Linking.openURL('https://sagars2004.github.io/Finsh/privacy')}
                 activeOpacity={0.7}
               >
                 <View style={styles.appearanceInfo}>
                   <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Privacy Policy</Text>
                   <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
-                    Tap to view this document in your browser
+                    Review our commitment to privacy
+                  </Text>
+                </View>
+                <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.appearanceOption}
+                onPress={() => Linking.openURL('https://sagars2004.github.io/Finsh/support')}
+                activeOpacity={0.7}
+              >
+                <View style={styles.appearanceInfo}>
+                  <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Support</Text>
+                  <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
+                    Get help or view FAQs
+                  </Text>
+                </View>
+                <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.appearanceOption, { borderBottomWidth: 0 }]}
+                onPress={() => Linking.openURL('https://sagars2004.github.io/Finsh/')}
+                activeOpacity={0.7}
+              >
+                <View style={styles.appearanceInfo}>
+                  <Text style={[styles.appearanceLabel, { color: currentColors.text }]}>Website</Text>
+                  <Text style={[styles.appearanceDescription, { color: currentColors.textSecondary }]}>
+                    Visit our official page
                   </Text>
                 </View>
                 <Text style={[styles.arrow, { color: currentColors.textSecondary }]}>›</Text>

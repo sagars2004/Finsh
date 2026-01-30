@@ -5,10 +5,10 @@ title: Home
 
 <div style="text-align: center; padding: 40px 0;">
   <img src="https://raw.githubusercontent.com/sagars2004/Finsh/main/assets/icon.png" alt="Finsh Logo" width="120" style="border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <h1 style="font-size: 3em; margin: 20px 0 10px;">Finsh</h1>
+  <h1 style="font-size: 3em; margin: 20px 0 10px;">This is Finsh.</h1>
   <p style="font-size: 1.5em; color: #666; max-width: 600px; margin: 0 auto;">
-    Financial clarity without the compromise.
-    <br>Private. Local. Secure.
+    Keep your paycheck swimming in the right direction.
+    <br>Decode. Compare. Plan.
   </p>
   
   <div style="margin-top: 40px;">
@@ -23,17 +23,17 @@ title: Home
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 30px;">
   
   <div style="padding: 20px; border: 1px solid #eee; border-radius: 12px;">
-    <h3>🔒 Private by Design</h3>
+    <h3>Private by Design</h3>
     <p>Your financial data never leaves your device. No servers, no tracking, no peace of mind lost.</p>
   </div>
 
   <div style="padding: 20px; border: 1px solid #eee; border-radius: 12px;">
-    <h3>💰 Smart Tax Estimates</h3>
+    <h3>Smart Tax Estimates</h3>
     <p>Automatically calculates federal and state taxes to give you a realistic view of your actual take-home pay.</p>
   </div>
 
   <div style="padding: 20px; border: 1px solid #eee; border-radius: 12px;">
-    <h3>📊 Flexible Planning</h3>
+    <h3>Flexible Planning</h3>
     <p>Simulate tradeoffs between salary, savings, and expenses to build the perfect financial plan for you.</p>
   </div>
 
