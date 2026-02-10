@@ -13,7 +13,7 @@ title: Home
   </p>
   
   <div style="margin-top: 40px;">
-    <a href="https://apps.apple.com/us/app/finsh/id123456789" style="background: #000000; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 1.1em;">Download on the App Store</a>
+    <a href="https://apps.apple.com/us/app/finsh/id6758129925" style="background: #000000; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 1.1em;">Download on the App Store</a>
   </div>
 </div>
 
